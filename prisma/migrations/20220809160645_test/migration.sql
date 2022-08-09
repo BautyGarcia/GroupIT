@@ -1,0 +1,9 @@
+-- CreateTable
+CREATE TABLE "GroupIT" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "GroupIT_pkey" PRIMARY KEY ("id")
+);
