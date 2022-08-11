@@ -8,12 +8,83 @@ datasource db {
 }
 
 model Usuario {
-  id            String @id @default(cuid())
-  nombreUsuario String @unique
-  passoword     String @unique
-  mail          String @unique
-  nombre        String
-  apellido      String
-  edad          Int
+  id             String           @id @default(cuid())
+  nombreUsuario  String           @unique
+  passoword      String           @unique
+  mail           String           @unique
+  nombre         String
+  apellido       String
+  edad           Int
+  eventos        Eventos[]
+  usuarioEventos UsuarioEventos[]
+  CosasTraidas   CosasTraidas[]
 }
 
+model Eventos {
+  id               String             @id @default(cuid())
+  nombre           String             @unique
+  descripcion      String
+  fecha            DateTime
+  lugar            String
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
+  usuarioId        String
+  usuarioEventos   UsuarioEventos[]
+  eventosProveedor EventosProveedor[]
+  CosasTraer       CosasTraer[]
+  CosasTraidas     CosasTraidas[]
+}
+
+model Proveedores {
+  id               String             @id @default(cuid())
+  nombre           String             @unique
+  tipoServicio     TipoServicio       @default(Undefined)
+  personasMinimas  Int
+  precio           Int
+  contacto         String
+  eventosProveedor EventosProveedor[]
+}
+
+model UsuarioEventos {
+  id           String  @id @default(cuid())
+  confirmacion Boolean
+  usuario      Usuario @relation(fields: [idUsuario], references: [id])
+  evento       Eventos @relation(fields: [idEvento], references: [id])
+  idUsuario    String
+  idEvento     String
+}
+
+model EventosProveedor {
+  id          String      @id @default(cuid())
+  evento      Eventos     @relation(fields: [idEvento], references: [id])
+  proveedor   Proveedores @relation(fields: [idProveedor], references: [id])
+  idEvento    String
+  idProveedor String
+}
+
+model CosasTraer {
+  id           String  @id @default(cuid())
+  nombreObjeto String
+  cantidad     Int
+  evento       Eventos @relation(fields: [idEvento], references: [id])
+  idEvento     String
+}
+
+model CosasTraidas {
+  id           String  @id @default(cuid())
+  nombreObjeto String
+  cantidad     Int
+  evento       Eventos @relation(fields: [idEvento], references: [id])
+  idEvento     String
+  usuario      Usuario @relation(fields: [idUsuario], references: [id])
+  idUsuario    String
+}
+
+enum TipoServicio {
+  Undefined
+  Catering
+  Muebles
+  Organizacion
+  Entretenimiento
+  EntretenimientoInfantil
+  Otros
+}
