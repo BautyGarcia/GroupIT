@@ -8,7 +8,16 @@ app.use(express.json());
 
 //Rutas
 
+app.get("/users", async (req, res) => {
+    const users = await GroupIT_Controller.getAllUsers();
+    res.json(users);
+});
 
+app.post("/createUser", async (req, res) => {
+    const userInfo = req.body
+    const user = await GroupIT_Controller.createUser(userInfo);
+    res.json(user);
+});
 
 //Listen
 
