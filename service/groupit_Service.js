@@ -32,6 +32,54 @@ class GroupITService {
             console.error(err.message);
         }
     }
+
+    async updatePassword(userInfo){
+        try {
+            const user = await prisma.Usuario.update({
+                where: {
+                    nombreUsuario: userInfo.nombreUsuario,
+                    password: userInfo.password
+                },
+                data: {
+                    password: userInfo.nuevaPassword
+                }
+            })
+            return user
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async deleteUser(userInfo){
+        try {
+            const user = await prisma.Usuario.delete({
+                where: {
+                    nombreUsuario: userInfo.nombreUsuario,
+                    password: userInfo.password
+                }
+            })
+            return user
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async getUser(userInfo){
+        try {
+            const user = await prisma.Usuario.findOne({
+                where: {
+                    nombreUsuario: userInfo.nombreUsuario,
+                    password: userInfo.password
+                }
+            })
+            return user
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
 }
 
 module.exports = new GroupITService()
