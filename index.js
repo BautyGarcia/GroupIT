@@ -52,6 +52,18 @@ app.get("/events", async (req, res) => {
     res.json(events);
 });
 
+app.get("/event", async (req, res) => {
+    const eventInfo = req.body
+    const event = await GroupIT_Controller.getEventByUsername(eventInfo);
+    res.json(event);
+});
+
+app.put("/updateEvent", async (req, res) => {
+    const eventInfo = req.body
+    const newEvent = await GroupIT_Controller.updateEvent(eventInfo);
+    res.json(newEvent);
+});
+
 
 //Proveedores
 

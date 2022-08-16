@@ -1,11 +1,10 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
-class GroupITService {
-
+class userService {
     async getAllUsers(){
         try {
-            const allUsers = await prisma.Usuario.findMany()
+            const allUsers = await prisma.usuario.findMany()
             return allUsers;
         }
         catch (err) {
@@ -17,7 +16,7 @@ class GroupITService {
         try {
             const { nombreUsuario, password, mail, nombre, apellido, edad } = userInfo
 
-            const newUser = await prisma.Usuario.create({
+            const newUser = await prisma.usuario.create({
                 data: {
                     nombreUsuario,
                     password,
@@ -39,7 +38,7 @@ class GroupITService {
         try {
             const { nombreUsuario, password, nuevaPassword } = userInfo
 
-            const user = await prisma.Usuario.update({
+            const user = await prisma.usuario.update({
                 where: {
                     nombreUsuario: nombreUsuario,
                     password: password
@@ -59,7 +58,7 @@ class GroupITService {
         try {
             const { nombreUsuario, password } = userInfo
 
-            const user = await prisma.Usuario.delete({
+            const user = await prisma.usuario.delete({
                 where: {
                     nombreUsuario: nombreUsuario,
                     password: password
@@ -76,7 +75,7 @@ class GroupITService {
         try {
             const { nombreUsuario, password } = userInfo
 
-            const user = await prisma.Usuario.findFirst({
+            const user = await prisma.usuario.findFirst({
                 where: {
                     nombreUsuario: nombreUsuario,
                     password: password
@@ -88,58 +87,6 @@ class GroupITService {
             console.error(err.message);
         }
     }
-
-    
-
-    async createEvent(eventInfo){
-        try {
-            const { nombre, descripcion, lugar, fecha, nombreUsuario } = eventInfo
-            
-            const userHost = await prisma.Usuario.findFirst({
-                where: {
-                    nombreUsuario: nombreUsuario
-                }
-            })
-
-            const newEvent = await prisma.Eventos.create({
-                data: {
-                    nombre,
-                    descripcion,
-                    lugar,
-                    fecha: new Date(fecha),
-                    usuario: {
-                        connect: {
-                            nombreUsuario
-                        }
-                    }
-                }
-            })
-
-            return newEvent
-        } 
-        catch (err) {
-            console.error(err.message);
-        }
-    }
-
-    async getAllEvents(){
-        try {
-            const allEvents = await prisma.Eventos.findMany({
-               include: {
-                    usuario: {
-                        select: {
-                            nombreUsuario: true
-                        }
-                    }
-                }
-            })
-            return allEvents;
-        }
-        catch (err) {
-            console.error(err.message);
-        }
-    }
-    
 }
 
-module.exports = new GroupITService()
+module.exports = new userService()
