@@ -16,30 +16,42 @@ app.get("/users", async (req, res) => {
 });
 
 app.get("/user", async (req, res) => {
-    const { userInfo } = req.body
+    const userInfo = req.body
     const user = await GroupIT_Controller.getUser(userInfo);
     res.json(user);
 });
 
 app.post("/createUser", async (req, res) => {
-    const { userInfo } = req.body
+    const userInfo = req.body
     const user = await GroupIT_Controller.createUser(userInfo);
     res.json(user);
 });
 
-app.update("/updatePassword", async (req, res) => {
-    const { userInfo } = req.body
+app.put("/updatePassword", async (req, res) => {
+    const userInfo = req.body
     const user = await GroupIT_Controller.updatePassword(userInfo);
     res.json(user);
 });
 
 app.delete("/deleteUser", async (req, res) => {
-    const { userInfo } = req.body
+    const userInfo = req.body
     const user = await GroupIT_Controller.deleteUser(userInfo);
     res.json(user);
 });
 
 //Eventos
+
+app.post("/createEvent", async (req, res) => {
+    const eventInfo = req.body
+    const event = await GroupIT_Controller.createEvent(eventInfo);
+    res.json(event);
+});
+
+app.get("/events", async (req, res) => {
+    const events = await GroupIT_Controller.getAllEvents();
+    res.json(events);
+});
+
 
 //Proveedores
 

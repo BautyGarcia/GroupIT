@@ -20,7 +20,15 @@ class GroupITController {
     
     getUser(userInfo){
         return GroupIT_Service.getUser(userInfo)
-    }   
+    }
+
+    createEvent(eventInfo){
+        return GroupIT_Service.createEvent(eventInfo)
+    }
+
+    getAllEvents(){
+        return GroupIT_Service.getAllEvents()
+    }
 }
 
 module.exports = new GroupITController()

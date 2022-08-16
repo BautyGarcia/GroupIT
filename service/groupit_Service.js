@@ -15,14 +15,16 @@ class GroupITService {
 
     async createUser(userInfo){
         try {
+            const { nombreUsuario, password, mail, nombre, apellido, edad } = userInfo
+
             const newUser = await prisma.Usuario.create({
                 data: {
-                    nombreUsuario: userInfo.nombreUsuario,
-                    password: userInfo.password,
-                    mail: userInfo.mail,
-                    nombre: userInfo.nombre,
-                    apellido: userInfo.apellido,
-                    edad: userInfo.edad
+                    nombreUsuario,
+                    password,
+                    mail,
+                    nombre,
+                    apellido,
+                    edad
                 }
             })
 
@@ -35,13 +37,15 @@ class GroupITService {
 
     async updatePassword(userInfo){
         try {
+            const { nombreUsuario, password, nuevaPassword } = userInfo
+
             const user = await prisma.Usuario.update({
                 where: {
-                    nombreUsuario: userInfo.nombreUsuario,
-                    password: userInfo.password
+                    nombreUsuario: nombreUsuario,
+                    password: password
                 },
                 data: {
-                    password: userInfo.nuevaPassword
+                    password: nuevaPassword
                 }
             })
             return user
@@ -53,10 +57,12 @@ class GroupITService {
 
     async deleteUser(userInfo){
         try {
+            const { nombreUsuario, password } = userInfo
+
             const user = await prisma.Usuario.delete({
                 where: {
-                    nombreUsuario: userInfo.nombreUsuario,
-                    password: userInfo.password
+                    nombreUsuario: nombreUsuario,
+                    password: password
                 }
             })
             return user
@@ -68,10 +74,12 @@ class GroupITService {
 
     async getUser(userInfo){
         try {
-            const user = await prisma.Usuario.findOne({
+            const { nombreUsuario, password } = userInfo
+
+            const user = await prisma.Usuario.findFirst({
                 where: {
-                    nombreUsuario: userInfo.nombreUsuario,
-                    password: userInfo.password
+                    nombreUsuario: nombreUsuario,
+                    password: password
                 }
             })
             return user
@@ -80,6 +88,58 @@ class GroupITService {
             console.error(err.message);
         }
     }
+
+    
+
+    async createEvent(eventInfo){
+        try {
+            const { nombre, descripcion, lugar, fecha, nombreUsuario } = eventInfo
+            
+            const userHost = await prisma.Usuario.findFirst({
+                where: {
+                    nombreUsuario: nombreUsuario
+                }
+            })
+
+            const newEvent = await prisma.Eventos.create({
+                data: {
+                    nombre,
+                    descripcion,
+                    lugar,
+                    fecha: new Date(fecha),
+                    usuario: {
+                        connect: {
+                            nombreUsuario
+                        }
+                    }
+                }
+            })
+
+            return newEvent
+        } 
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async getAllEvents(){
+        try {
+            const allEvents = await prisma.Eventos.findMany({
+               include: {
+                    usuario: {
+                        select: {
+                            nombreUsuario: true
+                        }
+                    }
+                }
+            })
+            return allEvents;
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+    
 }
 
 module.exports = new GroupITService()
