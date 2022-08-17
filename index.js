@@ -60,7 +60,7 @@ app.get("/event", async (req, res) => {
 
 app.put("/updateEvent", async (req, res) => {
     const eventInfo = req.body
-    const newEvent = await GroupIT_Controller.updateEvent(eventInfo);
+    const newEvent = await GroupIT_Controller.updateEvent(eventInfo); 
     res.json(newEvent);
 });
 

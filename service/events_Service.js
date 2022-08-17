@@ -3,7 +3,7 @@ const prisma = new PrismaClient()
 
 class eventService {
 
-    async createEvent(eventInfo){
+    async createEvent(eventInfo) {
         try {
             const { nombre, descripcion, lugar, fecha, nombreUsuario } = eventInfo
 
@@ -30,13 +30,13 @@ class eventService {
             })
 
             return newEvent
-        } 
+        }
         catch (err) {
             console.error(err.message);
         }
     }
 
-    async getAllEvents(){
+    async getAllEvents() {
         try {
             const allEvents = await prisma.eventos.findMany({
                 include: {
@@ -54,7 +54,7 @@ class eventService {
         }
     }
 
-    async getEventByUsername(eventInfo){
+    async getEventByUsername(eventInfo) {
         try {
             const { nombreUsuario } = eventInfo
 
@@ -79,16 +79,23 @@ class eventService {
         }
     }
 
-    async updateEvent(eventInfo){
+    async updateEvent(eventInfo) {
         try {
+
             const { nombre, descripcion, lugar, fecha, nombreUsuario } = eventInfo
-            const newEvent = await prisma.eventos.update({
+
+            const event = await prisma.eventos.findFirst({
                 where: {
                     nombre,
-                    // usuario: {
-                    //     nombreUsuario
-                    // }
-                    // Falta poner que tambien chequee el nombre de usuario
+                    usuario: {
+                        nombreUsuario
+                    }
+                }
+            })
+    
+            const newEvent = await prisma.eventos.update({
+                where: {
+                    id: event.id
                 },
                 data: {
                     descripcion,
@@ -105,12 +112,13 @@ class eventService {
                 }
             })
             return newEvent
-        }
+
+        } 
         catch (err) {
-            console.error(err.message);
+            console.error(err.message)
         }
     }
-    
+
 }
 
 module.exports = new eventService()
