@@ -37,7 +37,19 @@ class GroupITController {
     updateEvent(eventInfo){
         return events_Service.updateEvent(eventInfo)
     }
+
+    addUserToEvent(eventInfo){
+        return events_Service.addUserToEvent(eventInfo)
+    }
     
+    deleteUserFromEvent(eventInfo){
+        return events_Service.deleteUserFromEvent(eventInfo)
+    }
+
+    getEventParticipants(eventInfo){
+        return events_Service.getEventParticipants(eventInfo)
+    }
+
 }
 
 module.exports = new GroupITController()

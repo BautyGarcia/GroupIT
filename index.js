@@ -64,6 +64,23 @@ app.put("/updateEvent", async (req, res) => {
     res.json(newEvent);
 });
 
+app.post("/addUser", async (req, res) => {
+    const eventInfo = req.body
+    const newEvent = await GroupIT_Controller.addUserToEvent(eventInfo);
+    res.json(newEvent);
+});
+
+app.delete("/deleteUser", async (req, res) => {
+    const eventInfo = req.body
+    const newEvent = await GroupIT_Controller.deleteUserFromEvent(eventInfo);
+    res.json(newEvent);
+});
+
+app.get("/participants", async (req, res) => {
+    const eventInfo = req.body
+    const participants = await GroupIT_Controller.getEventParticipants(eventInfo);
+    res.json(participants);
+});
 
 //Proveedores
 
