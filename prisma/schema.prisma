@@ -10,14 +10,14 @@ datasource db {
 model Usuario {
   id             String           @id @default(cuid())
   nombreUsuario  String           @unique
-  password       String
   mail           String           @unique
   nombre         String
   apellido       String
   edad           Int
+  password       String
+  CosasTraidas   CosasTraidas[]
   eventos        Eventos[]
   usuarioEventos UsuarioEventos[]
-  CosasTraidas   CosasTraidas[]
 }
 
 model Eventos {
@@ -26,12 +26,12 @@ model Eventos {
   descripcion      String
   fecha            DateTime
   lugar            String
-  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
   usuarioId        String
-  usuarioEventos   UsuarioEventos[]
-  eventosProveedor EventosProveedor[]
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
   CosasTraer       CosasTraer[]
   CosasTraidas     CosasTraidas[]
+  eventosProveedor EventosProveedor[]
+  usuarioEventos   UsuarioEventos[]
 }
 
 model Proveedores {
@@ -47,36 +47,44 @@ model Proveedores {
 model UsuarioEventos {
   id           String  @id @default(cuid())
   confirmacion Boolean
-  usuario      Usuario @relation(fields: [idUsuario], references: [id])
-  evento       Eventos @relation(fields: [idEvento], references: [id])
   idUsuario    String
   idEvento     String
+  evento       Eventos @relation(fields: [idEvento], references: [id])
+  usuario      Usuario @relation(fields: [idUsuario], references: [id])
 }
 
 model EventosProveedor {
   id          String      @id @default(cuid())
-  evento      Eventos     @relation(fields: [idEvento], references: [id])
-  proveedor   Proveedores @relation(fields: [idProveedor], references: [id])
   idEvento    String
   idProveedor String
+  evento      Eventos     @relation(fields: [idEvento], references: [id])
+  proveedor   Proveedores @relation(fields: [idProveedor], references: [id])
 }
 
 model CosasTraer {
   id           String  @id @default(cuid())
   nombreObjeto String
   cantidad     Int
-  evento       Eventos @relation(fields: [idEvento], references: [id])
   idEvento     String
+  evento       Eventos @relation(fields: [idEvento], references: [id])
 }
 
 model CosasTraidas {
   id           String  @id @default(cuid())
   nombreObjeto String
   cantidad     Int
-  evento       Eventos @relation(fields: [idEvento], references: [id])
   idEvento     String
-  usuario      Usuario @relation(fields: [idUsuario], references: [id])
   idUsuario    String
+  evento       Eventos @relation(fields: [idEvento], references: [id])
+  usuario      Usuario @relation(fields: [idUsuario], references: [id])
+}
+
+model session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
 }
 
 enum TipoServicio {

@@ -1,7 +1,9 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
+const bcrypt = require('bcrypt');
 
 class userService {
+
     async getAllUsers(){
         try {
             const allUsers = await prisma.usuario.findMany()
@@ -17,10 +19,12 @@ class userService {
         try {
             const { nombreUsuario, password, mail, nombre, apellido, edad } = userInfo
 
+            const hashedPassword = bcrypt.hashSync(password, 10)
+
             const newUser = await prisma.usuario.create({
                 data: {
                     nombreUsuario,
-                    password,
+                    password: hashedPassword,
                     mail,
                     nombre,
                     apellido,
@@ -72,16 +76,22 @@ class userService {
         }
     }
 
-    async getUser(userInfo){
+    async login(userInfo){
         try {
-            const { nombreUsuario, password } = userInfo
+            const { nombreUsuario, password} = userInfo
 
             const user = await prisma.usuario.findFirst({
                 where: {
-                    nombreUsuario: nombreUsuario,
-                    password: password
+                    nombreUsuario
                 }
             })
+
+            const matches = bcrypt.compareSync(password, user.password)
+
+            if(!matches){
+                throw new Error("Wrong password")
+            }
+
             return user
         }
         catch (err) {

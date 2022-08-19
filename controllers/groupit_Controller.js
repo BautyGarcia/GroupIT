@@ -18,8 +18,8 @@ class GroupITController {
         return user_Service.deleteUser(userInfo)
     }
     
-    getUser(userInfo){
-        return user_Service.getUser(userInfo)
+    login(userInfo){
+        return user_Service.login(userInfo)
     }
 
     createEvent(eventInfo){
