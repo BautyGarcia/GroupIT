@@ -79,12 +79,11 @@ model CosasTraidas {
   usuario      Usuario @relation(fields: [idUsuario], references: [id])
 }
 
-model session {
-  sid    String   @id @db.VarChar
-  sess   Json     @db.Json
-  expire DateTime @db.Timestamp(6)
-
-  @@index([expire], map: "IDX_session_expire")
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
 }
 
 enum TipoServicio {

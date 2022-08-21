@@ -30,8 +30,8 @@ class GroupITController {
         return events_Service.getAllEvents()
     }
 
-    getEventByUsername(eventInfo){
-        return events_Service.getEventByUsername(eventInfo)
+    getMyEvents(eventInfo){
+        return events_Service.getMyEvents(eventInfo)
     }
 
     updateEvent(eventInfo){

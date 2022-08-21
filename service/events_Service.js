@@ -54,7 +54,7 @@ class eventService {
         }
     }
 
-    async getEventByUsername(eventInfo) {
+    async getMyEvents(eventInfo) {
         try {
             const { nombreUsuario } = eventInfo
 
@@ -202,7 +202,7 @@ class eventService {
     }
 
     async getEventParticipants(eventInfo) {
-        const {nombreEvento } = eventInfo
+        const { nombreEvento } = eventInfo
         
         const participants = await prisma.usuarioEventos.findMany({
             where: {

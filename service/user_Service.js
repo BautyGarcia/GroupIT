@@ -21,6 +21,17 @@ class userService {
 
             const hashedPassword = bcrypt.hashSync(password, 10)
 
+            const findUser = await prisma.usuario.findFirst({
+                where: {
+                    nombreUsuario,
+                    mail
+                }
+            })
+
+            if(findUser){
+                throw new Error('User already exists')
+            }
+
             const newUser = await prisma.usuario.create({
                 data: {
                     nombreUsuario,
@@ -43,13 +54,34 @@ class userService {
         try {
             const { nombreUsuario, password, nuevaPassword } = userInfo
 
+            if(password == nuevaPassword){
+                throw new Error('New password is the same as the old password')
+            }
+
+            const hashedNewPassword = bcrypt.hashSync(nuevaPassword, 10)
+
+            const userName = await prisma.usuario.findFirst({
+                where: {
+                    nombreUsuario
+                }
+            })
+
+            const matches = bcrypt.compareSync(password, userName.password)
+
+            if(!matches){
+                throw new Error('Wrong Password')
+            }
+
+            if(!userName){
+                throw new Error('You are not logged in')
+            }
+
             const user = await prisma.usuario.update({
                 where: {
-                    nombreUsuario: nombreUsuario,
-                    password: password
+                    nombreUsuario
                 },
                 data: {
-                    password: nuevaPassword
+                    password: hashedNewPassword
                 }
             })
             return user
@@ -61,12 +93,11 @@ class userService {
 
     async deleteUser(userInfo){
         try {
-            const { nombreUsuario, password } = userInfo
+            const { nombreUsuario } = userInfo
 
             const user = await prisma.usuario.delete({
                 where: {
-                    nombreUsuario: nombreUsuario,
-                    password: password
+                    nombreUsuario
                 }
             })
             return user
