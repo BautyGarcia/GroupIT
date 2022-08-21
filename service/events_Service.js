@@ -92,6 +92,10 @@ class eventService {
                     }
                 }
             })
+
+            if (!event) {
+                throw new Error('User is not host of event')
+            }
     
             const newEvent = await prisma.eventos.update({
                 where: {
