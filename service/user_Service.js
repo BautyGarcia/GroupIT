@@ -117,6 +117,10 @@ class userService {
                 }
             })
 
+            if(!user){
+                throw new Error("Wrong username")
+            }
+
             const matches = bcrypt.compareSync(password, user.password)
 
             if(!matches){

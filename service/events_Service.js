@@ -72,6 +72,11 @@ class eventService {
                     }
                 }
             })
+
+            if(!event){
+                throw new Error("You do not have any events... Create One!")
+            }
+
             return event;
         }
         catch (err) {

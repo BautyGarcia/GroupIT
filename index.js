@@ -54,11 +54,13 @@ app.post("/login", async (req, res) => {
     const userInfo = req.body
     const user = await GroupIT_Controller.login(userInfo);
 
-    req.session.user = {
-        id: user.id,
-        nombreUsuario: user.nombreUsuario,
-        password: user.password,
-        email: user.mail
+    if(user){
+        req.session.user = {
+            id: user.id,
+            nombreUsuario: user.nombreUsuario,
+            password: user.password,
+            email: user.mail
+        }
     }
 
     res.json(user);
@@ -70,7 +72,7 @@ app.post("/logout", async (req, res) => {
         return res.sendStatus(200)
     } catch (e) {
         console.error(e)
-        return res.sendStatus(500)
+        return res.sendStatus(403)
     }
 });
 
@@ -117,7 +119,9 @@ app.delete("/deleteUser", async (req, res) => {
 
 app.post("/createEvent", async (req, res) => {
     const eventInfo = req.body
-    eventInfo.nombreUsuario = req.session.user.nombreUsuario
+    if(req.session.user.nombreUsuario == undefined){
+        throw new Error("You must be logged in")
+    } else eventInfo.nombreUsuario = req.session.user.nombreUsuario 
     const event = await GroupIT_Controller.createEvent(eventInfo);
     res.json(event);
 });
@@ -128,31 +132,55 @@ app.get("/events", async (req, res) => {
 });
 
 app.get("/myEvents", async (req, res) => {
-    const eventInfo = req.body
-    eventInfo.nombreUsuario = req.session.user.nombreUsuario
-    const event = await GroupIT_Controller.getMyEvents(eventInfo);
-    res.json(event);
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        const event = await GroupIT_Controller.getMyEvents(eventInfo);
+        res.json(event);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
 });
 
 app.put("/updateEvent", async (req, res) => {
-    const eventInfo = req.body
-    eventInfo.nombreUsuario = req.session.user.nombreUsuario
-    const newEvent = await GroupIT_Controller.updateEvent(eventInfo); 
-    res.json(newEvent);
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        const newEvent = await GroupIT_Controller.updateEvent(eventInfo);
+        res.json(newEvent);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
 });
 
 app.post("/addUser", async (req, res) => {
-    const eventInfo = req.body
-    eventInfo.nombreUsuario = req.session.user.nombreUsuario
-    const newEvent = await GroupIT_Controller.addUserToEvent(eventInfo);
-    res.json(newEvent);
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        const newUser = await GroupIT_Controller.addUserToEvent(eventInfo);
+        res.json(newUser);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
 });
 
 app.delete("/deleteUser", async (req, res) => {
-    const eventInfo = req.body
-    eventInfo.nombreHost = req.session.user.nombreUsuario
-    const newEvent = await GroupIT_Controller.deleteUserFromEvent(eventInfo);
-    res.json(newEvent);
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        const deletedUser = await GroupIT_Controller.deleteUserFromEvent(eventInfo);
+        res.json(deletedUser);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
 });
 
 app.get("/participants", async (req, res) => {
