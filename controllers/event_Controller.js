@@ -1,27 +1,6 @@
-const events_Service = require('../service/events_Service');
-const user_Service = require('../service/user_Service');
-class GroupITController {
+const events_Service = require('../service/event_Service');
 
-    getAllUsers(){
-        return user_Service.getAllUsers()
-    }
-
-    createUser(userInfo){
-        return user_Service.createUser(userInfo)
-    }
-
-    updatePassword(userInfo){
-        return user_Service.updatePassword(userInfo)
-    }
-
-    deleteUser(userInfo){
-        return user_Service.deleteUser(userInfo)
-    }
-    
-    login(userInfo){
-        return user_Service.login(userInfo)
-    }
-
+class eventController {
     createEvent(eventInfo){
         return events_Service.createEvent(eventInfo)
     }
@@ -49,7 +28,6 @@ class GroupITController {
     getEventParticipants(eventInfo){
         return events_Service.getEventParticipants(eventInfo)
     }
-
 }
 
-module.exports = new GroupITController()
+module.exports = new eventController()
