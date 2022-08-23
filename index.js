@@ -9,6 +9,7 @@ const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const { router : userRoutes, basePath : userBasePath} = require('./routes/user.routes');
 const { router : eventRoutes, basePath : eventBasePath} = require('./routes/event.routes');
 const { router : authRoutes, basePath : authBasePath} = require('./routes/auth.routes');
+const { router : providerRoutes, basePath : providerBasePath} = require('./routes/provider.routes');
 
 //Setting up the app
 
@@ -49,7 +50,7 @@ app.use(eventBasePath, eventRoutes);
 
 app.use(authBasePath, authRoutes);
 
-//Proveedores
+app.use(providerBasePath, providerRoutes);
 
 //ListaCosas
 
