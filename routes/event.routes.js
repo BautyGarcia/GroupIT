@@ -29,12 +29,16 @@ router.get("/participants", async (req, res) => {
 });
 
 router.post("", async (req, res) => {
-    const eventInfo = req.body
-    if(req.session.user.nombreUsuario == undefined){
-        throw new Error("You must be logged in")
-    } else eventInfo.nombreUsuario = req.session.user.nombreUsuario 
-    const event = await Event_Controller.createEvent(eventInfo);
-    res.json(event);
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        const event = await Event_Controller.createEvent(eventInfo);
+        res.json(event);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
 });
 
 router.post("/addUser", async (req, res) => {

@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Usuario {
   id             String           @id @default(cuid())
   nombreUsuario  String           @unique
@@ -19,6 +18,7 @@ model Usuario {
   CosasTraidas   CosasTraidas[]
   eventos        Eventos[]
   usuarioEventos UsuarioEventos[]
+  proveedores    Proveedores[]
 }
 
 model Eventos {
@@ -43,6 +43,8 @@ model Proveedores {
   precio           Int
   contacto         String
   eventosProveedor EventosProveedor[]
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
+  usuarioId        String
 }
 
 model UsuarioEventos {
