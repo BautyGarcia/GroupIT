@@ -97,10 +97,6 @@ class eventService {
                 }
             })
 
-            if(!event){
-                throw new Error("You do not have any events... Create One!")
-            }
-
             return event;
         }
         catch (err) {
@@ -223,26 +219,6 @@ class eventService {
                     },
                 }
             })
-
-            const deletedLogsToBring = await prisma.cosasTraer.deleteMany({
-                where: {
-                    usuario: {
-                        nombreUsuario
-                    }
-                }
-            })
-
-            const deletedLogsBrought = await prisma.cosasTraidas.deleteMany({
-                where: {
-                    usuario: {
-                        nombreUsuario
-                    }
-                }
-            })
-
-            if (!deletedLogsToBring || !deletedLogsBrought) {
-                throw new Error('Error deleting Item List logs')
-            }
             
             return newEvent
         }
@@ -308,54 +284,6 @@ class eventService {
 
             if (!deletedEvent) {
                 throw new Error('Error deleting event')
-            }
-
-            const deletedRelation = await prisma.usuarioEventos.deleteMany({
-                where: {
-                    evento: {
-                        nombre: nombreEvento
-                    }
-                }
-            })
-
-            if (!deletedRelation) {
-                deletedRelation = undefined
-            }
-
-            const deletedProviders = await prisma.eventosProveedor.deleteMany({
-                where: {
-                    evento: {
-                        nombre: nombreEvento
-                    }
-                }
-            })
-
-            if (!deletedProviders) {
-                deletedProviders = undefined
-            }
-
-            const deletedToBringList = await prisma.cosasTraer.deleteMany({
-                where: {
-                    evento: {
-                        nombre: nombreEvento
-                    }
-                }
-            })
-
-            if (!deletedToBringList) {
-                deletedToBringList = undefined
-            }
-
-            const deletedBroughtList = await prisma.cosasTraidas.deleteMany({
-                where: {
-                    evento: {
-                        nombre: nombreEvento
-                    }
-                }
-            })
-
-            if (!deletedBroughtList) {
-                deletedBroughtList = undefined
             }
 
             return deletedEvent

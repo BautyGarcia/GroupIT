@@ -28,7 +28,7 @@ model Eventos {
   fecha            DateTime
   lugar            String
   usuarioId        String
-  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   CosasTraer       CosasTraer[]
   CosasTraidas     CosasTraidas[]
   eventosProveedor EventosProveedor[]
@@ -43,7 +43,7 @@ model Proveedores {
   precio           Int
   contacto         String
   eventosProveedor EventosProveedor[]
-  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId        String
 }
 
@@ -52,16 +52,16 @@ model UsuarioEventos {
   confirmacion Boolean
   idUsuario    String
   idEvento     String
-  evento       Eventos @relation(fields: [idEvento], references: [id])
-  usuario      Usuario @relation(fields: [idUsuario], references: [id])
+  evento       Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)
+  usuario      Usuario @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
 }
 
 model EventosProveedor {
   id          String      @id @default(cuid())
   idEvento    String
   idProveedor String
-  evento      Eventos     @relation(fields: [idEvento], references: [id])
-  proveedor   Proveedores @relation(fields: [idProveedor], references: [id])
+  evento      Eventos     @relation(fields: [idEvento], references: [id], onDelete: Cascade)
+  proveedor   Proveedores @relation(fields: [idProveedor], references: [id], onDelete: Cascade)
 }
 
 model CosasTraer {
@@ -69,7 +69,7 @@ model CosasTraer {
   nombreObjeto String?
   cantidad     Int?
   idEvento     String
-  evento       Eventos @relation(fields: [idEvento], references: [id])
+  evento       Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)
 }
 
 model CosasTraidas {
@@ -78,8 +78,8 @@ model CosasTraidas {
   cantidad     Int?
   idEvento     String
   idUsuario    String?
-  evento       Eventos  @relation(fields: [idEvento], references: [id])
-  usuario      Usuario? @relation(fields: [idUsuario], references: [id])
+  evento       Eventos  @relation(fields: [idEvento], references: [id], onDelete: Cascade)
+  usuario      Usuario? @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
 }
 
 model Session {
