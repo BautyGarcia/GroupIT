@@ -67,7 +67,7 @@ router.put("", async (req, res) => {
     }
 });
 
-router.delete("", async (req, res) => {
+router.delete("/user", async (req, res) => {
     try {
         const eventInfo = req.body
         eventInfo.nombreUsuario = req.session.user.nombreUsuario
@@ -79,6 +79,20 @@ router.delete("", async (req, res) => {
         res.status(403).send("You must login");
     }
 });
+
+router.delete("", async (req, res) => {
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        const deletedEvent = await Event_Controller.deleteEvent(eventInfo);
+        res.json(deletedEvent);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
+});
+
 
 module.exports = { router, basePath };
 

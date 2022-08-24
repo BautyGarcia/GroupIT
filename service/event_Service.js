@@ -29,6 +29,30 @@ class eventService {
 
             })
 
+            const newToBringList = await prisma.cosasTraer.create({
+                data: {
+                    evento: {
+                        connect: {
+                            nombre
+                        }
+                    }
+                }
+            })
+
+            const newBroughtList = await prisma.cosasTraidas.create({
+                data: {
+                    evento: {
+                        connect: {
+                            nombre
+                        }
+                    }
+                }
+            })
+            
+            if(!newToBringList || !newBroughtList){
+                throw new Error('Error al crear la lista de cosas a traer y cosas traidas')
+            }
+
             return newEvent
         }
         catch (err) {
@@ -189,9 +213,6 @@ class eventService {
                 where: {
                     usuario: {
                         nombreUsuario
-                    },
-                    evento: {
-                        nombre: nombreEvento
                     }
                 },
                 include: {
@@ -202,6 +223,26 @@ class eventService {
                     },
                 }
             })
+
+            const deletedLogsToBring = await prisma.cosasTraer.deleteMany({
+                where: {
+                    usuario: {
+                        nombreUsuario
+                    }
+                }
+            })
+
+            const deletedLogsBrought = await prisma.cosasTraidas.deleteMany({
+                where: {
+                    usuario: {
+                        nombreUsuario
+                    }
+                }
+            })
+
+            if (!deletedLogsToBring || !deletedLogsBrought) {
+                throw new Error('Error deleting Item List logs')
+            }
             
             return newEvent
         }
@@ -235,7 +276,94 @@ class eventService {
         console.error(err.message);
     }
 
+    async deleteEvent (eventInfo) {
+        try {
+            const { nombreEvento, nombreUsuario } = eventInfo
 
+            const event = await prisma.eventos.findFirst({
+                where: {
+                    nombre: nombreEvento,
+                    usuario: {
+                        nombreUsuario
+                    }
+                }
+            })
+
+            if (!event) {
+                throw new Error('User is not host of event')
+            }
+
+            const deletedEvent = await prisma.eventos.delete({
+                where: {
+                    nombre: nombreEvento
+                },
+                include: {
+                    usuario: {
+                        select: {
+                            nombreUsuario: true
+                        }
+                    }
+                }
+            })
+
+            if (!deletedEvent) {
+                throw new Error('Error deleting event')
+            }
+
+            const deletedRelation = await prisma.usuarioEventos.deleteMany({
+                where: {
+                    evento: {
+                        nombre: nombreEvento
+                    }
+                }
+            })
+
+            if (!deletedRelation) {
+                deletedRelation = undefined
+            }
+
+            const deletedProviders = await prisma.eventosProveedor.deleteMany({
+                where: {
+                    evento: {
+                        nombre: nombreEvento
+                    }
+                }
+            })
+
+            if (!deletedProviders) {
+                deletedProviders = undefined
+            }
+
+            const deletedToBringList = await prisma.cosasTraer.deleteMany({
+                where: {
+                    evento: {
+                        nombre: nombreEvento
+                    }
+                }
+            })
+
+            if (!deletedToBringList) {
+                deletedToBringList = undefined
+            }
+
+            const deletedBroughtList = await prisma.cosasTraidas.deleteMany({
+                where: {
+                    evento: {
+                        nombre: nombreEvento
+                    }
+                }
+            })
+
+            if (!deletedBroughtList) {
+                deletedBroughtList = undefined
+            }
+
+            return deletedEvent
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
 }
 
 module.exports = new eventService()

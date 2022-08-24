@@ -324,6 +324,27 @@ class providerService {
             console.error(err.message);
         }
     }
+
+    async getProviderInfo(providerInfo) {
+        try {
+            const { nombreProveedor } = providerInfo
+
+            const provider = await prisma.proveedores.findFirst({
+                where: {
+                    nombre: nombreProveedor
+                }
+            })
+
+            if (!provider) {
+                throw new Error('Provider not found')
+            }
+
+            return provider
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
 }
 
 

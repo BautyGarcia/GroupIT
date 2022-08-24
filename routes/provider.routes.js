@@ -113,4 +113,17 @@ router.get("/getMyServices", async (req, res) => {
     }
 });
 
+router.get("/providerInfo", async (req, res) => {
+    try {
+        const providerInfo = req.body
+        providerInfo.nombreUsuario = req.session.user.nombreUsuario
+        const provider = await Provider_Controller.getProviderInfo(providerInfo);
+        res.json(provider);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
+});
+
 module.exports = { router, basePath };

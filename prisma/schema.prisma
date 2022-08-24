@@ -66,20 +66,20 @@ model EventosProveedor {
 
 model CosasTraer {
   id           String  @id @default(cuid())
-  nombreObjeto String
-  cantidad     Int
+  nombreObjeto String?
+  cantidad     Int?
   idEvento     String
   evento       Eventos @relation(fields: [idEvento], references: [id])
 }
 
 model CosasTraidas {
-  id           String  @id @default(cuid())
-  nombreObjeto String
-  cantidad     Int
+  id           String   @id @default(cuid())
+  nombreObjeto String?
+  cantidad     Int?
   idEvento     String
-  idUsuario    String
-  evento       Eventos @relation(fields: [idEvento], references: [id])
-  usuario      Usuario @relation(fields: [idUsuario], references: [id])
+  idUsuario    String?
+  evento       Eventos  @relation(fields: [idEvento], references: [id])
+  usuario      Usuario? @relation(fields: [idUsuario], references: [id])
 }
 
 model Session {

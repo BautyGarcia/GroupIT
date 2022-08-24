@@ -41,6 +41,10 @@ class providerController {
         return providers_Service.getMyServices(providerInfo);
     }
 
+    async getProviderInfo(providerInfo) {
+        return providers_Service.getProviderInfo(providerInfo);
+    }
+    
 }
 
 module.exports = new providerController();

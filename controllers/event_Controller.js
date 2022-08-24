@@ -28,6 +28,10 @@ class eventController {
     getEventParticipants(eventInfo){
         return events_Service.getEventParticipants(eventInfo)
     }
+
+    deleteEvent(eventInfo){
+        return events_Service.deleteEvent(eventInfo)
+    }
 }
 
 module.exports = new eventController()
