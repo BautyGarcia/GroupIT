@@ -29,30 +29,6 @@ class eventService {
 
             })
 
-            const newToBringList = await prisma.cosasTraer.create({
-                data: {
-                    evento: {
-                        connect: {
-                            nombre
-                        }
-                    }
-                }
-            })
-
-            const newBroughtList = await prisma.cosasTraidas.create({
-                data: {
-                    evento: {
-                        connect: {
-                            nombre
-                        }
-                    }
-                }
-            })
-            
-            if(!newToBringList || !newBroughtList){
-                throw new Error('Error al crear la lista de cosas a traer y cosas traidas')
-            }
-
             return newEvent
         }
         catch (err) {
