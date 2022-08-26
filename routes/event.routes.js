@@ -84,7 +84,7 @@ router.delete("", async (req, res) => {
     try {
         const eventInfo = req.body
         eventInfo.nombreUsuario = req.session.user.nombreUsuario
-        const deletedEvent = await Event_Controller.gitdeleteEvent(eventInfo);
+        const deletedEvent = await Event_Controller.deleteEvent(eventInfo);
         res.json(deletedEvent);
     }
     catch (err) {

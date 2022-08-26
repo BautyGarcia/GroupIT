@@ -33,7 +33,12 @@ class itemListService {
             },
             select: {
                 nombreObjeto: true,
-                cantidad: true
+                cantidad: true,
+                usuario: {
+                    select: {
+                        nombreUsuario: true
+                    }
+                }
             }
         })
     
@@ -85,6 +90,78 @@ class itemListService {
         })
 
         return newList
+    }
+
+    async setItemsBrought(listInfo) {
+        
+        const { nombreEvento, nombreObjeto, cantidadObjeto, nombreUsuario } = listInfo
+
+        const event = await prisma.usuarioEventos.findFirst({
+            where: {
+                evento: {
+                    nombreEvento
+                },
+                usuario: {
+                    nombreUsuario
+                }
+            }
+        })
+
+        if (!event) {
+            throw new Error("Event not found")
+        }
+
+        const checkList = await prisma.consasTraer.findFirst({
+            where: {
+                nombreObjeto
+            }
+        })
+
+        if (!checkList) {
+            throw new Error("Item not found")
+        }
+
+        const newList = await prisma.consasTraer.update({
+            where: {
+                nombreObjeto: nombreObjeto,
+                evento: {
+                    nombreEvento
+                }
+            },
+            data: {
+                cantidad: {
+                    decrement: cantidadObjeto
+                }
+            }
+        })
+
+        const newBroughtList = await prisma.cosasTraidas.create({
+            data: {
+                nombreObjeto,
+                cantidad: cantidadObjeto,
+                evento: {
+                    connect: {
+                        nombreEvento
+                    }
+                },
+                usuario: {
+                    connect: {
+                        nombreUsuario
+                    }
+                }
+            },
+            select: {
+                nombreObjeto: true,
+                cantidad: true,
+                usuario: {
+                    select: {
+                        nombreUsuario: true
+                    }
+                }
+            }
+        })    
+        
+        return newBroughtList
     }
 }
 
