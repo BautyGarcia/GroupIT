@@ -44,7 +44,7 @@ router.post("", async (req, res) => {
 router.post("/addUser", async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        eventInfo.nombreHost = req.session.user.nombreUsuario
         const newUser = await Event_Controller.addUserToEvent(eventInfo);
         res.json(newUser);
     }
@@ -70,7 +70,7 @@ router.put("", async (req, res) => {
 router.delete("/user", async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        eventInfo.nombreHost = req.session.user.nombreUsuario
         const deletedUser = await Event_Controller.deleteUserFromEvent(eventInfo);
         res.json(deletedUser);
     }
@@ -83,7 +83,7 @@ router.delete("/user", async (req, res) => {
 router.delete("", async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        eventInfo.nombreHost = req.session.user.nombreUsuario
         const deletedEvent = await Event_Controller.deleteEvent(eventInfo);
         res.json(deletedEvent);
     }

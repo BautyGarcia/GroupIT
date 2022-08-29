@@ -62,7 +62,7 @@ class itemListService {
             throw new Error("Event not found")
         }
 
-        const checkList = await prisma.consasTraer.findFirst({
+        const checkList = await prisma.cosasTraer.findFirst({
             where: {
                 nombreObjeto: nombreObjeto
             }
@@ -72,18 +72,13 @@ class itemListService {
             throw new Error("Item already exists")
         }
 
-        const newList = await prisma.consasTraer.create({
+        const newList = await prisma.cosasTraer.create({
             data: {
                 nombreObjeto,
                 cantidad: cantidadObjeto,
                 evento: {
                     connect: {
-                        nombreEvento
-                    }
-                },
-                usuario: {
-                    connect: {
-                        nombreUsuario: nombreHost
+                        nombre: nombreEvento
                     }
                 }
             }
@@ -96,22 +91,32 @@ class itemListService {
         
         const { nombreEvento, nombreObjeto, cantidadObjeto, nombreUsuario } = listInfo
 
-        const event = await prisma.usuarioEventos.findFirst({
+        const event = await prisma.eventos.findFirst({
             where: {
-                evento: {
-                    nombreEvento
-                },
+                nombre: nombreEvento
+            }
+        })
+
+        if(!event) {
+            throw new Error("Event not found")
+        }
+
+        const eventParticipant = await prisma.usuarioEventos.findFirst({
+            where: {
                 usuario: {
                     nombreUsuario
+                },
+                evento: {
+                    nombre: nombreEvento
                 }
             }
         })
 
-        if (!event) {
-            throw new Error("Event not found")
+        if (!eventParticipant) {
+            throw new Error("You are not part of this event")
         }
 
-        const checkList = await prisma.consasTraer.findFirst({
+        const checkList = await prisma.cosasTraer.findFirst({
             where: {
                 nombreObjeto
             }
@@ -121,12 +126,9 @@ class itemListService {
             throw new Error("Item not found")
         }
 
-        const newList = await prisma.consasTraer.update({
+        const newList = await prisma.cosasTraer.update({
             where: {
-                nombreObjeto: nombreObjeto,
-                evento: {
-                    nombreEvento
-                }
+                id: checkList.id
             },
             data: {
                 cantidad: {
@@ -141,7 +143,7 @@ class itemListService {
                 cantidad: cantidadObjeto,
                 evento: {
                     connect: {
-                        nombreEvento
+                        nombre: nombreEvento
                     }
                 },
                 usuario: {

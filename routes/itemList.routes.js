@@ -18,7 +18,7 @@ router.get("/brought", async (req, res) => {
 
 router.post("/toBring", async (req, res) => {
     const listInfo = req.body
-    listInfo.nombreUsuario = req.session.user.nombreUsuario
+    listInfo.nombreHost = req.session.user.nombreUsuario
     const items = await itemList_Controller.setItemsToBring(listInfo);
     res.json(items);
 });

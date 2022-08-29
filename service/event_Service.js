@@ -155,6 +155,7 @@ class eventService {
                         }
                     }
                 }
+
             })
             
             return newEvent
@@ -210,14 +211,7 @@ class eventService {
             where: {
                 evento: {
                     nombre: nombreEvento
-                }
-            },
-            select: {
-                confirmacion: true,
-                usuario: {
-                    select: {
-                        nombreUsuario: true
-                    }
+             
                 }
             }
         })
@@ -230,13 +224,13 @@ class eventService {
 
     async deleteEvent (eventInfo) {
         try {
-            const { nombreEvento, nombreUsuario } = eventInfo
+            const { nombreEvento, nombreHost } = eventInfo
 
             const event = await prisma.eventos.findFirst({
                 where: {
                     nombre: nombreEvento,
                     usuario: {
-                        nombreUsuario
+                        nombreUsuario: nombreHost
                     }
                 }
             })
