@@ -1,18 +1,39 @@
+require("dotenv").config()
 const express = require('express');
+const jwt = require('jsonwebtoken')
 const Event_Controller = require('../controllers/event_Controller');
 
 const router = express.Router();
 const basePath = '/event'
+
+//--------JWT---------
+
+const authorization = (req, res, next) => {
+    const token = req.cookies.access_token;
+    if (!token) {
+      return res.sendStatus(403).json({ message: 'You are not logged in' });
+    }
+    try {
+      const data = jwt.verify(token, process.env.SECRET_KEY);
+      req.nombreUsuario = data.nombreUsuario;
+      req.password = data.password;
+      return next();
+    } catch {
+      return res.sendStatus(403);
+    }
+};
+
+//----------Routes------------
 
 router.get("/all", async (req, res) => {
     const events = await Event_Controller.getAllEvents();
     res.json(events);
 });
 
-router.get("/own", async (req, res) => {
+router.get("/own", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        eventInfo.nombreUsuario = req.nombreUsuario
         const event = await Event_Controller.getMyEvents(eventInfo);
         res.json(event);
     }
@@ -40,10 +61,10 @@ router.post("", async (req, res) => {
     }
 });
 
-router.post("/addUser", async (req, res) => {
+router.post("/addUser", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreHost = req.session.user.nombreUsuario
+        eventInfo.nombreHost = req.nombreUsuario
         const newUser = await Event_Controller.addUserToEvent(eventInfo);
         res.json(newUser);
     }
@@ -53,10 +74,10 @@ router.post("/addUser", async (req, res) => {
     }
 });
 
-router.put("", async (req, res) => {
+router.put("", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreUsuario = req.session.user.nombreUsuario
+        eventInfo.nombreUsuario = req.nombreUsuario
         const newEvent = await Event_Controller.updateEvent(eventInfo);
         res.json(newEvent);
     }
@@ -66,10 +87,10 @@ router.put("", async (req, res) => {
     }
 });
 
-router.delete("/user", async (req, res) => {
+router.delete("/user", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreHost = req.session.user.nombreUsuario
+        eventInfo.nombreHost = req.nombreUsuario
         const deletedUser = await Event_Controller.deleteUserFromEvent(eventInfo);
         res.json(deletedUser);
     }
@@ -79,10 +100,10 @@ router.delete("/user", async (req, res) => {
     }
 });
 
-router.delete("", async (req, res) => {
+router.delete("", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreHost = req.session.user.nombreUsuario
+        eventInfo.nombreHost = req.nombreUsuario
         const deletedEvent = await Event_Controller.deleteEvent(eventInfo);
         res.json(deletedEvent);
     }

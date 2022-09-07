@@ -11,7 +11,7 @@ const basePath = '/auth'
 const authorization = (req, res, next) => {
     const token = req.cookies.access_token;
     if (!token) {
-      return res.sendStatus(403);
+      return res.sendStatus(403).json({ message: 'You are not logged in' });
     }
     try {
       const data = jwt.verify(token, process.env.SECRET_KEY);
