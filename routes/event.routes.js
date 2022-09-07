@@ -1,23 +1,8 @@
 const express = require('express');
 const Event_Controller = require('../controllers/event_Controller');
-const cookiePareser = require("cookie-parser")
-const jwt = require("jsonwebtoken")
 
 const router = express.Router();
 const basePath = '/event'
-
-router.use(cookiePareser())
-
-function authenticateToken (req, res, next) {
-    const authHeader = req.cookies.accessToken
-    if (authHeader == null) return res.sendStatus (401)
-    jwt.verify ( authHeader , process.env.ACCESS_TOKEN_SECRET, ( err , user ) => {
-      if (err) return res.sendStatus ( 403 )
-      console.log(user)
-      req.user=user
-      next()
-    })
-}
 
 router.get("/all", async (req, res) => {
     const events = await Event_Controller.getAllEvents();
@@ -43,10 +28,9 @@ router.get("/participants", async (req, res) => {
     res.json(participants);
 });
 
-router.post("", authenticateToken, async (req, res) => {
+router.post("", async (req, res) => {
     try {
         const eventInfo = req.body
-        eventInfo.nombreUsuario = req.user.payload.name
         const event = await Event_Controller.createEvent(eventInfo);
         res.json(event);
     }

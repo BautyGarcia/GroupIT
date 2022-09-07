@@ -1,10 +1,8 @@
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const app = express();
-const expressSession = require('express-session');
 const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
-const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
+const cookieParser = require("cookie-parser");
 const { router : userRoutes, basePath : userBasePath} = require('./routes/user.routes');
 const { router : eventRoutes, basePath : eventBasePath} = require('./routes/event.routes');
 const { router : authRoutes, basePath : authBasePath} = require('./routes/auth.routes');
@@ -15,6 +13,7 @@ const PORT = process.env.PORT || 5000;
 //Setting up the app
 
 app.use(express.json())
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 app.use(
     cors({
@@ -23,27 +22,6 @@ app.use(
         credentials: true,
     })
 )
-
-/*
-app.use(
-    expressSession({
-      cookie: {
-       maxAge: 7 * 24 * 60 * 60 * 1000 // ms
-      },
-      secret: process.env.SESSION_SECRET,
-      resave: true,
-      saveUninitialized: true,
-      store: new PrismaSessionStore(
-        new PrismaClient(),
-        {
-          checkPeriod: 2 * 60 * 1000,  //ms
-          dbRecordIdIsSessionId: true,
-          dbRecordIdFunction: undefined,
-        }
-      )
-    })
-);
-*/
 
 //-------------------------------Rutas-------------------------------
 

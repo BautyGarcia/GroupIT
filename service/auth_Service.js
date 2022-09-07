@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 class authService {
     async login(userInfo){
         try {
-            const { nombreUsuario, password} = userInfo
+            const { nombreUsuario, password } = userInfo
 
             const user = await prisma.usuario.findFirst({
                 where: {

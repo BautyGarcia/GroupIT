@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require('express');
 const jwt = require('jsonwebtoken')
 const Auth_Controller = require('../controllers/auth_Controller');
@@ -6,39 +7,52 @@ const router = express.Router();
 const basePath = '/auth'
 
 //--------JWT---------
-let refreshTokens = []
 
-function generateAccessToken (user) {
-    return jwt.sign (user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '24h' } )
-}
+const authorization = (req, res, next) => {
+    const token = req.cookies.access_token;
+    if (!token) {
+      return res.sendStatus(403);
+    }
+    try {
+      const data = jwt.verify(token, process.env.SECRET_KEY);
+      req.nombreUsuario = data.nombreUsuario;
+      req.password = data.password;
+      return next();
+    } catch {
+      return res.sendStatus(403);
+    }
+};
 
 //----------Routes------------
 
-router.post("/login", async (req, res) => {
-    const username = req.body.username
-    const user = { payload: { name : username } }
-    const accessToken = generateAccessToken(user)
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-    res.cookie("refreshToken", refreshToken, {maxAge: 15 * 60 * 1000, httpOnly: true })
-    res.cookie("accessToken", accessToken, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true })
-    refreshTokens.push(refreshToken)
-    res.json({ accessToken : accessToken, refreshToken : refreshToken })
-});
-
-router.post("/logout", async (req, res) => {
-    refreshTokens = refreshTokens.filter(token => token !== req.body.token)
-    res.sendStatus(204)
-});
-
-/*
-router.post("/getSession", async (req, res) => {
-    if (req.sessionID && req.session.user) {
-        res.status(200)
-        return res.json({ user: req.session.user })
+router.get("/login", async (req, res) => {
+    const authInfo = req.body
+    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "30s" });
+    
+    const checkUser = await Auth_Controller.login(authInfo);
+    
+    if (checkUser){
+        return res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+        })
+        .status(200)
+        .json({ message: "Logged in successfully 😊 👌" });
+    } else {
+        return res.status(401).json({ message: "That user does not exist" })
     }
-    return res.sendStatus(403)
 });
-*/
 
+router.get("/logout", async (req, res) => {
+    return res
+    .clearCookie("access_token")
+    .status(200)
+    .json({ message: "Successfully logged out 😏 🍀" });
+});
+
+router.get("/getSession", authorization, async (req, res) => {
+    return res.json({ user: { nombreUsuario: req.nombreUsuario, password: req.password } });
+});
 
 module.exports = { router, basePath };
