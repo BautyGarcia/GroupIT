@@ -82,13 +82,6 @@ model CosasTraidas {
   usuario      Usuario? @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
 }
 
-model Session {
-  id        String   @id
-  sid       String   @unique
-  data      String
-  expiresAt DateTime
-}
-
 enum TipoServicio {
   Undefined
   Catering

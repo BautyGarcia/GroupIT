@@ -27,7 +27,7 @@ const authorization = (req, res, next) => {
 
 router.get("/login", async (req, res) => {
     const authInfo = req.body
-    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "30s" });
+    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "5m" });
     
     const checkUser = await Auth_Controller.login(authInfo);
     

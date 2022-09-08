@@ -6,7 +6,7 @@ const Event_Controller = require('../controllers/event_Controller');
 const router = express.Router();
 const basePath = '/event'
 
-//--------JWT---------
+//-----------JWT-----------
 
 const authorization = (req, res, next) => {
     const token = req.cookies.access_token;
@@ -19,11 +19,11 @@ const authorization = (req, res, next) => {
       req.password = data.password;
       return next();
     } catch {
-      return res.sendStatus(403);
+      return res.sendStatus(403).json({ message: 'You are not logged in' });
     }
 };
 
-//----------Routes------------
+//-----------Routes-----------
 
 router.get("/all", async (req, res) => {
     const events = await Event_Controller.getAllEvents();
@@ -49,9 +49,10 @@ router.get("/participants", async (req, res) => {
     res.json(participants);
 });
 
-router.post("", async (req, res) => {
+router.post("", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
+        eventInfo.nombreUsuario = req.nombreUsuario
         const event = await Event_Controller.createEvent(eventInfo);
         res.json(event);
     }
@@ -87,6 +88,19 @@ router.put("", authorization, async (req, res) => {
     }
 });
 
+router.put("/confirm", authorization, async (req, res) => {
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.nombreUsuario
+        const confirmedEvent = await Event_Controller.confirmEvent(eventInfo);
+        res.json(confirmedEvent);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
+});
+
 router.delete("/user", authorization, async (req, res) => {
     try {
         const eventInfo = req.body
@@ -113,6 +127,18 @@ router.delete("", authorization, async (req, res) => {
     }
 });
 
+router.delete("/quit", authorization, async (req, res) => {
+    try {
+        const eventInfo = req.body
+        eventInfo.nombreUsuario = req.nombreUsuario
+        const quitEvent = await Event_Controller.quitEvent(eventInfo);
+        res.json(quitEvent);
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(403).send("You must login");
+    }
+});
 
 module.exports = { router, basePath };
 

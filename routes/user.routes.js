@@ -19,7 +19,7 @@ const authorization = (req, res, next) => {
       req.password = data.password;
       return next();
     } catch {
-      return res.sendStatus(403);
+      return res.sendStatus(403).json({ message: 'You are not logged in' });
     }
 };
 
@@ -52,7 +52,12 @@ router.put("/password", authorization, async (req, res) => {
     const userInfo = req.body
     userInfo.nombreUsuario = req.nombreUsuario
     const user = await User_Controller.updatePassword(userInfo);
-    res.json(user);
+
+    if (user){
+        return res.status(200).json(user);
+    } else {
+        return res.status(401).json({ message: "Password is not correct or old passoword is the same as new one" })
+    }
 });
 
 router.delete("", authorization, async (req, res) => {
@@ -62,6 +67,8 @@ router.delete("", authorization, async (req, res) => {
 
     if (user){
         res.clearCookie("access_token").json(user);
+    } else {
+        return res.status(401).json({ message: "Password is not correct or user does not exist" })
     }
 });
 

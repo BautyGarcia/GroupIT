@@ -143,6 +143,17 @@ class providerService {
                 throw new Error('Event not found')
             }
 
+            const checkIfProviderIsInEvent = await prisma.EventosProveedor.findFirst({
+                where: {
+                    idEvento: event.id,
+                    idProveedor: provider.id
+                }
+            })
+
+            if (checkIfProviderIsInEvent) {
+                throw new Error('Provider is already in event')
+            }
+            
             const newProvider = await prisma.EventosProveedor.create({
                 data: {
                     evento: {
@@ -275,10 +286,7 @@ class providerService {
 
             const provider = await prisma.proveedores.findFirst({
                 where: {
-                    nombre: nombreProveedor,
-                    usuario: {
-                        nombreUsuario
-                    }
+                    nombre: nombreProveedor
                 }
             })
 
@@ -294,6 +302,7 @@ class providerService {
                     evento: true
                 }
             })
+
             return myEvents
         }
         catch (err) {

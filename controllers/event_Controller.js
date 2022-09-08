@@ -32,6 +32,15 @@ class eventController {
     deleteEvent(eventInfo){
         return events_Service.deleteEvent(eventInfo)
     }
+
+    confirmEvent(eventInfo){
+        return events_Service.confirmEvent(eventInfo)
+    }
+
+    quitEvent(eventInfo){
+        return events_Service.quitEvent(eventInfo)
+    }
+    
 }
 
 module.exports = new eventController()

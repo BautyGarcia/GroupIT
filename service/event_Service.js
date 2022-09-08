@@ -167,7 +167,7 @@ class eventService {
 
     async deleteUserFromEvent(eventInfo) {
         try {
-            const {nombreHost, nombreUsuario, nombreEvento } = eventInfo
+            const { nombreHost, nombreUsuario, nombreEvento } = eventInfo
 
             const event = await prisma.eventos.findFirst({
                 where: {
@@ -182,11 +182,24 @@ class eventService {
                 throw new Error('User is not host of event')
             }
 
-            const newEvent = await prisma.usuarioEventos.delete({
+            const getUserToDelete = await prisma.usuarioEventos.findFirst({
                 where: {
                     usuario: {
                         nombreUsuario
+                    },
+                    evento: {
+                        nombre: nombreEvento
                     }
+                }
+            })
+
+            if (!getUserToDelete) {
+                throw new Error('User is not in event')
+            }
+
+            const newEvent = await prisma.usuarioEventos.delete({
+                where: {
+                    id: getUserToDelete.id
                 },
                 include: {
                     usuario: {
@@ -257,6 +270,80 @@ class eventService {
             }
 
             return deletedEvent
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async confirmEvent (eventInfo) {
+        try {
+            const { nombreEvento, nombreUsuario, confirmationState } = eventInfo
+
+            const event = await prisma.usuarioEventos.findFirst({
+                where: {
+                    usuario: {
+                        nombreUsuario
+                    },
+                    evento: {
+                        nombre: nombreEvento
+                    }
+                }
+            })
+
+            if (!event) {
+                throw new Error('User is not in event')
+            }
+
+            const newEvent = await prisma.usuarioEventos.update({
+                where: {
+                    id: event.id
+                },
+                data: {
+                    confirmacion: confirmationState
+                }
+            })
+
+            return newEvent
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async quitEvent (eventInfo) {
+        try {
+            const { nombreEvento, nombreUsuario } = eventInfo
+
+            const event = await prisma.usuarioEventos.findFirst({
+                where: {
+                    usuario: {
+                        nombreUsuario
+                    },
+                    evento: {
+                        nombre: nombreEvento
+                    }
+                }
+            })
+
+            if (!event) {
+                throw new Error('User is not in event')
+            }
+
+            const newEvent = await prisma.usuarioEventos.delete({
+                where: {
+                    id: event.id
+                },
+                include: {
+                    usuario: {
+                        select: {
+                            nombreUsuario: true
+                        }
+                    }
+                }
+            })
+
+            return newEvent
         }
         catch (err) {
             console.error(err.message);
