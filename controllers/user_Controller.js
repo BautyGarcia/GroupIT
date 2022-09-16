@@ -16,6 +16,14 @@ class userController {
     deleteUser(userInfo){
         return user_Service.deleteUser(userInfo)
     }
+
+    sendEmail(userInfo){
+        return user_Service.sendEmail(userInfo)
+    }
+
+    getEmail(userInfo){
+        return user_Service.getEmail(userInfo)
+    }
 }
 
 module.exports = new userController()

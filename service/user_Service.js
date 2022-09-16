@@ -1,6 +1,9 @@
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const bcrypt = require('bcrypt');
+const { json } = require('express');
+const nodemailer = require('nodemailer');
 
 class userService {
 
@@ -101,6 +104,64 @@ class userService {
                 }
             })
             return user
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async sendEmail(userInfo){
+        try {
+            const { email } = userInfo
+
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'Contact.GroupIT.App@gmail.com',
+                    pass: process.env.EMAIL_KEY
+                }
+            });
+              
+            const mailOptions = {
+                from: 'Contact.GroupIT.App@gmail.com',
+                to: email,
+                subject: 'mando mails',
+                text: 'Este texto confirma alegremente que puedo mandar mails por segundo año consecutivo'
+            };
+              
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+
+            return json({ message : "Email sent succesfully!" });
+        }
+        catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    async getEmail(userInfo){
+        try {
+            const { nombreUsuario } = userInfo
+
+            const user = await prisma.usuario.findFirst({
+                where: {
+                    nombreUsuario
+                },
+                select: {
+                    mail: true
+                }
+            })
+
+            if(!user){
+                throw new Error("That user doesn't exist");
+            }
+
+            return user;
         }
         catch (err) {
             console.error(err.message);

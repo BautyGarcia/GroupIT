@@ -1,6 +1,7 @@
 require("dotenv").config()
 const express = require('express');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const user_Controller = require("../controllers/user_Controller");
 const User_Controller = require('../controllers/user_Controller');
 
 const router = express.Router();
@@ -29,6 +30,27 @@ router.get("/all", async (req, res) => {
     const users = await User_Controller.getAllUsers();
     res.json(users);
 });
+
+router.get("/sendEmail", authorization, async (req, res) => {
+    const userInfo = req.body
+    userInfo.nombreUsuario = req.nombreUsuario
+    const email = await User_Controller.getEmail(userInfo);
+
+    userInfo.email = email.mail;
+    const sendEmail = await User_Controller.sendEmail(userInfo);
+
+    if (!sendEmail){
+        return res.status(200).json({ message : "Something went wrong with the email"})
+    }
+    return res.send(`Email sent to ${userInfo.email}`);
+})
+
+router.get("/email", authorization, async (req, res) => {
+    const userInfo = req.body
+    userInfo.nombreUsuario = req.nombreUsuario
+    const user = await User_Controller.getEmail(userInfo);
+    return res.json(user);
+})
 
 router.post("", async (req, res) => {
     const userInfo = req.body
