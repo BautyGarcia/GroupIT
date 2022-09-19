@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-        origin: `http://localhost:${PORT}`,
+        origin: `*`,
         methods: ['POST', 'PUT', 'GET', 'DELETE', 'OPTIONS', 'HEAD'],
         credentials: true,
     })
