@@ -1,7 +1,6 @@
 require("dotenv").config()
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const user_Controller = require("../controllers/user_Controller");
 const User_Controller = require('../controllers/user_Controller');
 
 const router = express.Router();
@@ -54,7 +53,7 @@ router.get("/email", authorization, async (req, res) => {
 
 router.post("", async (req, res) => {
     const userInfo = req.body
-    const token = jwt.sign({ nombreUsuario: userInfo.nombreUsuario, password: userInfo.password }, process.env.SECRET_KEY, { expiresIn: "30s" });
+    const token = jwt.sign({ nombreUsuario: userInfo.nombreUsuario, password: userInfo.password }, process.env.SECRET_KEY, { expiresIn: "5m" });
     const user = await User_Controller.createUser(userInfo);
 
     if (user){
