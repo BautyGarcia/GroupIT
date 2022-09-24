@@ -27,6 +27,7 @@ const authorization = (req, res, next) => {
 
 router.get("/all", async (req, res) => {
     const users = await User_Controller.getAllUsers();
+    console.log(req.cookies);
     res.json(users);
 });
 
@@ -57,13 +58,16 @@ router.post("", async (req, res) => {
     const user = await User_Controller.createUser(userInfo);
 
     if (user){
-        return res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        })
+        const options = {
+            httpOnly: true,
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+            withCredentials: true
+        };
+
+        res.cookie("access_token", token, options)
         .status(200)
-        .json(user);
+        .json({ message: true, token })
+        .send();
     } else {
         return res.status(401).json({ message: "That username or eMail has already been taken" })
     }
