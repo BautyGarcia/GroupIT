@@ -27,20 +27,21 @@ const authorization = (req, res, next) => {
 
 router.post("/login", async (req, res) => {
     const authInfo = req.body
-    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "5m" });
+    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "30m" });
     const checkUser = await Auth_Controller.login(authInfo);
 
     if (checkUser){
         const options = {
-            httpOnly: true,
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-            withCredentials: true
+          httpOnly: true,
+          expires: new Date(Date.now() + 1000 * 60 * 30),
+          withCredentials: true
         };
 
         res.cookie("access_token", token, options)
         .status(200)
         .json({ message: true, token })
         .send();
+
     } else {
         return res.status(401).json({ message: "That user does not exist" })
     }
