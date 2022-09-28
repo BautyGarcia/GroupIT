@@ -63,7 +63,7 @@ router.post("", async (req, res) => {
           secure: process.env.NODE_ENV === "production",
         })
         .status(200)
-        .json(user);
+        .json({ token : token, message : "You are registered" });
     } else {
         return res.status(401).json({ message: "That username or eMail has already been taken" })
     }

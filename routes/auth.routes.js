@@ -25,7 +25,7 @@ const authorization = (req, res, next) => {
 
 //----------Routes------------
 
-router.get("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     const authInfo = req.body
     const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "5m" });
     
@@ -38,7 +38,7 @@ router.get("/login", async (req, res) => {
           secure: process.env.NODE_ENV === "production",
         })
         .status(200)
-        .json({ message: "Logged in successfully 😊 👌" });
+        .json({ token : token, message : "You are logged in" });
     } else {
         return res.status(401).json({ message: "That user does not exist" })
     }
