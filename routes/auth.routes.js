@@ -26,22 +26,24 @@ const authorization = (req, res, next) => {
 //----------Routes------------
 
 router.post("/login", async (req, res) => {
-    const authInfo = req.body
-    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "5m" });
-    
-    const checkUser = await Auth_Controller.login(authInfo);
-    
-    if (checkUser){
-        return res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        })
-        .status(200)
-        .json({ token : token, message : "You are logged in" });
-    } else {
-        return res.status(401).json({ message: "That user does not exist" })
-    }
+  const authInfo = req.body
+  const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "30m" });
+  const checkUser = await Auth_Controller.login(authInfo);
+
+  if (checkUser){
+
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 30,
+      withCredentials: true,
+      sameSite: 'none',
+      secure: true
+    })
+    .send({ message: true, token });
+
+  } else {
+    return res.status(401).json({ message: "That user does not exist" });
+  }
 });
 
 router.get("/logout", async (req, res) => {

@@ -25,6 +25,14 @@ const authorization = (req, res, next) => {
 
 //----------Routes------------
 
+router.get("/username", authorization, async (req, res) => {
+    const token = req.cookies.access_token;
+    const data = jwt.verify(token, process.env.SECRET_KEY);
+    const nombreUsuario = data.nombreUsuario;
+    const userInfo = { nombreUsuario };
+    return res.json(userInfo);
+});
+
 router.get("/all", async (req, res) => {
     const users = await User_Controller.getAllUsers();
     res.json(users);
@@ -41,33 +49,30 @@ router.get("/sendEmail", authorization, async (req, res) => {
     if (!sendEmail){
         return res.status(200).json({ message : "Something went wrong with the email"})
     }
-    return res.send(`Email sent to ${userInfo.email}`);
-})
-
-router.get("/email", authorization, async (req, res) => {
-    const userInfo = req.body
-    userInfo.nombreUsuario = req.nombreUsuario
-    const user = await User_Controller.getEmail(userInfo);
-    return res.json(user);
+    return res.json({ message :`Email sent to ${userInfo.email}` });
 })
 
 router.post("", async (req, res) => {
     const userInfo = req.body
-    const token = jwt.sign({ nombreUsuario: userInfo.nombreUsuario, password: userInfo.password }, process.env.SECRET_KEY, { expiresIn: "5m" });
+    const token = jwt.sign({ nombreUsuario: userInfo.nombreUsuario, password: userInfo.password }, process.env.SECRET_KEY, { expiresIn: "30m" });
     const user = await User_Controller.createUser(userInfo);
 
     if (user){
-        return res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        })
+        const options = {
+            httpOnly: true,
+            expires: new Date(Date.now() + 1000 * 60 * 30),
+            withCredentials: true
+        };
+
+        res.cookie("access_token", token, options)
         .status(200)
-        .json({ token : token, message : "You are registered" });
+        .json({ message: true, token })
+        .send();
     } else {
         return res.status(401).json({ message: "That username or eMail has already been taken" })
     }
 });
+
 
 router.put("/password", authorization, async (req, res) => {
     const userInfo = req.body
