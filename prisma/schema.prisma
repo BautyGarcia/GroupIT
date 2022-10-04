@@ -49,7 +49,7 @@ model Proveedores {
 
 model UsuarioEventos {
   id           String  @id @default(cuid())
-  confirmacion Boolean
+  confirmacion String  @default("Pendiente")
   idUsuario    String
   idEvento     String
   evento       Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)

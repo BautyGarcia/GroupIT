@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require('express');
 const jwt = require('jsonwebtoken')
 const Auth_Controller = require('../controllers/auth_Controller');
+const User_Controller = require('../controllers/user_Controller');
 
 const router = express.Router();
 const basePath = '/auth'
@@ -16,7 +17,7 @@ const authorization = (req, res, next) => {
     try {
       const data = jwt.verify(token, process.env.SECRET_KEY);
       req.nombreUsuario = data.nombreUsuario;
-      req.password = data.password;
+      req.mail = data.mail;
       return next();
     } catch {
       return res.sendStatus(403);
@@ -26,36 +27,53 @@ const authorization = (req, res, next) => {
 //----------Routes------------
 
 router.post("/login", async (req, res) => {
-    const authInfo = req.body
-    const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, password: authInfo.password }, process.env.SECRET_KEY, { expiresIn: "30m" });
-    const checkUser = await Auth_Controller.login(authInfo);
+    try {
+      const authInfo = req.body
+      const userEmail = await User_Controller.getEmail(authInfo);
 
-    if (checkUser){
-        const options = {
-          httpOnly: true,
-          expires: new Date(Date.now() + 1000 * 60 * 30),
-          withCredentials: true
-        };
+      const token = jwt.sign({ nombreUsuario: authInfo.nombreUsuario, mail: userEmail.mail }, process.env.SECRET_KEY, { expiresIn: "30m" });
+      const checkUser = await Auth_Controller.login(authInfo);
 
-        res.cookie("access_token", token, options)
-        .status(200)
-        .json({ message: true, token })
-        .send();
+      if (checkUser){
+          const options = {
+            httpOnly: true,
+            expires: new Date(Date.now() + 1000 * 60 * 30),
+            withCredentials: true
+          };
 
-    } else {
-        return res.status(401).json({ message: "That user does not exist" })
+          res.cookie("access_token", token, options)
+          .status(200)
+          .json({ message: true, token })
+          .send();
+
+      } else {
+          return res.status(401).json({ message: "That user does not exist" })
+      }
+    }
+    catch (err) {
+      console.error(err.message);
     }
 });
 
 router.get("/logout", async (req, res) => {
-    return res
-    .clearCookie("access_token")
-    .status(200)
-    .json({ message: "Successfully logged out 😏 🍀" });
+    try {
+      return res
+      .clearCookie("access_token")
+      .status(200)
+      .json({ message: "Successfully logged out 😏 🍀" });
+    }
+    catch (err) {
+      console.error(err.message);
+    }
 });
 
 router.get("/getSession", authorization, async (req, res) => {
-    return res.json({ user: { nombreUsuario: req.nombreUsuario, password: req.password } });
+    try {
+      return res.json({ user: { nombreUsuario: req.nombreUsuario, mail: req.mail } });
+    }
+    catch (err) {
+      console.error(err.message);
+    }
 });
 
 module.exports = { router, basePath };

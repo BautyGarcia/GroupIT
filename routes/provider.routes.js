@@ -16,7 +16,7 @@ const authorization = (req, res, next) => {
     try {
       const data = jwt.verify(token, process.env.SECRET_KEY);
       req.nombreUsuario = data.nombreUsuario;
-      req.password = data.password;
+      req.mail = data.mail;
       return next();
     } catch {
       return res.sendStatus(403);

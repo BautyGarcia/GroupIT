@@ -8,164 +8,136 @@ const nodemailer = require('nodemailer');
 class userService {
 
     async getAllUsers(){
-        try {
-            const allUsers = await prisma.usuario.findMany()
-            return allUsers;
-        }
-        catch (err) {
-            console.error(err.message);
-            throw err
-        }
+        const allUsers = await prisma.usuario.findMany()
+        return allUsers;
     }
 
     async createUser(userInfo){
-        try {
-            const { nombreUsuario, password, mail, nombre, apellido, edad } = userInfo
+        const { nombreUsuario, password, mail, nombre, apellido, edad } = userInfo
 
-            const hashedPassword = bcrypt.hashSync(password, 10)
+        const hashedPassword = bcrypt.hashSync(password, 10)
 
-            const findUser = await prisma.usuario.findFirst({
-                where: {
-                    nombreUsuario,
-                    mail
-                }
-            })
-
-            if(findUser){
-                throw new Error('User already exists')
+        const findUser = await prisma.usuario.findFirst({
+            where: {
+                nombreUsuario,
+                mail
             }
+        })
 
-            const newUser = await prisma.usuario.create({
-                data: {
-                    nombreUsuario,
-                    password: hashedPassword,
-                    mail,
-                    nombre,
-                    apellido,
-                    edad
-                }
-            })
-
-            return newUser
-        } 
-        catch (err) {
-            console.error(err.message);
+        if(findUser){
+            throw new Error('User already exists')
         }
+
+        const newUser = await prisma.usuario.create({
+            data: {
+                nombreUsuario,
+                password: hashedPassword,
+                mail,
+                nombre,
+                apellido,
+                edad
+            }
+        })
+
+        return newUser
     }
 
     async updatePassword(userInfo){
-        try {
-            const { nombreUsuario, password, nuevaPassword } = userInfo
 
-            if(password == nuevaPassword){
-                throw new Error('New password is the same as the old password')
-            }
+        const { nombreUsuario, password, nuevaPassword } = userInfo
 
-            const hashedNewPassword = bcrypt.hashSync(nuevaPassword, 10)
-
-            const userName = await prisma.usuario.findFirst({
-                where: {
-                    nombreUsuario
-                }
-            })
-
-            const matches = bcrypt.compareSync(password, userName.password)
-
-            if(!matches){
-                throw new Error('Wrong Password')
-            }
-
-            if(!userName){
-                throw new Error('You are not logged in')
-            }
-
-            const user = await prisma.usuario.update({
-                where: {
-                    nombreUsuario
-                },
-                data: {
-                    password: hashedNewPassword
-                }
-            })
-            return user
+        if(password == nuevaPassword){
+            throw new Error('New password is the same as the old password')
         }
-        catch (err) {
-            console.error(err.message);
+
+        const hashedNewPassword = bcrypt.hashSync(nuevaPassword, 10)
+
+        const userName = await prisma.usuario.findFirst({
+            where: {
+                nombreUsuario
+            }
+        })
+
+        const matches = bcrypt.compareSync(password, userName.password)
+
+        if(!matches){
+            throw new Error('Wrong Password')
         }
+
+        if(!userName){
+            throw new Error('You are not logged in')
+        }
+
+        const user = await prisma.usuario.update({
+            where: {
+                nombreUsuario
+            },
+            data: {
+                password: hashedNewPassword
+            }
+        })
+        return user
     }
 
     async deleteUser(userInfo){
-        try {
-            const { nombreUsuario } = userInfo
+        const { nombreUsuario } = userInfo
 
-            const user = await prisma.usuario.delete({
-                where: {
-                    nombreUsuario
-                }
-            })
-            return user
-        }
-        catch (err) {
-            console.error(err.message);
-        }
+        const user = await prisma.usuario.delete({
+            where: {
+                nombreUsuario
+            }
+        })
+        return user
     }
 
     async sendEmail(userInfo){
-        try {
-            const { email } = userInfo
 
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'Contact.GroupIT.App@gmail.com',
-                    pass: process.env.EMAIL_KEY
-                }
-            });
-              
-            const mailOptions = {
-                from: 'Contact.GroupIT.App@gmail.com',
-                to: email,
-                subject: 'mando mails',
-                text: 'Este texto confirma alegremente que puedo mandar mails por segundo año consecutivo'
-            };
-              
-            transporter.sendMail(mailOptions, function(error, info){
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log('Email sent: ' + info.response);
-                }
-            });
+        const { email } = userInfo
 
-            return json({ message : "Email sent succesfully!" });
-        }
-        catch (err) {
-            console.error(err.message);
-        }
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'Contact.GroupIT.App@gmail.com',
+                pass: process.env.EMAIL_KEY
+            }
+        });
+            
+        const mailOptions = {
+            from: 'Contact.GroupIT.App@gmail.com',
+            to: email,
+            subject: 'mando mails',
+            text: 'Este texto confirma alegremente que puedo mandar mails por segundo año consecutivo'
+        };
+            
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                throw new Error("Error sending email");
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+        return json({ message : "Email sent succesfully!" });
+
     }
 
     async getEmail(userInfo){
-        try {
-            const { nombreUsuario } = userInfo
+        const { nombreUsuario } = userInfo
 
-            const user = await prisma.usuario.findFirst({
-                where: {
-                    nombreUsuario
-                },
-                select: {
-                    mail: true
-                }
-            })
-
-            if(!user){
-                throw new Error("That user doesn't exist");
+        const user = await prisma.usuario.findFirst({
+            where: {
+                nombreUsuario
+            },
+            select: {
+                mail: true
             }
+        })
 
-            return user;
+        if(!user){
+            throw new Error("That user doesn't exist");
         }
-        catch (err) {
-            console.error(err.message);
-        }
+
+        return user;
     }
 }
 

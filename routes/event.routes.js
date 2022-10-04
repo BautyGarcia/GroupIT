@@ -7,7 +7,14 @@ const router = express.Router();
 const basePath = '/event'
 
 //-----------JWT-----------
+/*
+    try {
 
+    }
+    catch (err) {
+        console.error(err.message);
+    }
+*/
 const authorization = (req, res, next) => {
     const token = req.cookies.access_token;
     if (!token) {
@@ -16,7 +23,7 @@ const authorization = (req, res, next) => {
     try {
       const data = jwt.verify(token, process.env.SECRET_KEY);
       req.nombreUsuario = data.nombreUsuario;
-      req.password = data.password;
+      req.mail = data.mail;
       return next();
     } catch {
       return res.sendStatus(403).json({ message: 'You are not logged in' });
@@ -26,8 +33,13 @@ const authorization = (req, res, next) => {
 //-----------Routes-----------
 
 router.get("/all", async (req, res) => {
-    const events = await Event_Controller.getAllEvents();
-    res.json(events);
+    try {
+        const events = await Event_Controller.getAllEvents();
+        res.json(events);
+    }
+    catch (err) {
+        console.error(err.message);
+    }
 });
 
 router.get("/own", authorization, async (req, res) => {
@@ -38,15 +50,20 @@ router.get("/own", authorization, async (req, res) => {
         res.json(event);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
     }
 });
 
 router.get("/participants", async (req, res) => {
-    const eventInfo = req.body
-    const participants = await Event_Controller.getEventParticipants(eventInfo);
-    res.json(participants);
+    try
+    {
+        const eventInfo = req.body
+        const participants = await Event_Controller.getParticipants(eventInfo);
+        res.json(participants);
+    }
+    catch (err) {
+        console.error(err.message);
+    }
 });
 
 router.post("", authorization, async (req, res) => {
@@ -57,8 +74,7 @@ router.post("", authorization, async (req, res) => {
         res.json(event);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
     }
 });
 
@@ -83,8 +99,7 @@ router.put("", authorization, async (req, res) => {
         res.json(newEvent);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
     }
 });
 
@@ -96,8 +111,7 @@ router.put("/confirm", authorization, async (req, res) => {
         res.json(confirmedEvent);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
     }
 });
 
@@ -109,8 +123,7 @@ router.delete("/user", authorization, async (req, res) => {
         res.json(deletedUser);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
     }
 });
 
