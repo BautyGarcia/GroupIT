@@ -94,6 +94,7 @@ router.post("", async (req, res) => {
     }
 });
 
+
 router.put("/password", authorization, async (req, res) => {
     try {
         const userInfo = req.body
