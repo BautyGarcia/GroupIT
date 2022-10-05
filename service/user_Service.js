@@ -7,25 +7,38 @@ const nodemailer = require('nodemailer');
 
 class userService {
 
+    async getUser({ nombreUsuario }){
+        return await prisma.usuario.findFirst({
+            where: {
+                nombreUsuario
+            }
+        }) 
+    }
+    
     async getAllUsers(){
-        const allUsers = await prisma.usuario.findMany()
-        return allUsers;
+        return await prisma.usuario.findMany()
     }
 
     async createUser(userInfo){
+
         const { nombreUsuario, password, mail, nombre, apellido, edad } = userInfo
 
         const hashedPassword = bcrypt.hashSync(password, 10)
 
-        const findUser = await prisma.usuario.findFirst({
+        const checkUsername = await this.getUser({ nombreUsuario })
+
+        if(checkUsername){
+            throw new Error('User has already been taken')
+        }
+
+        const checkMail = await prisma.usuario.findFirst({
             where: {
-                nombreUsuario,
                 mail
             }
         })
 
-        if(findUser){
-            throw new Error('User already exists')
+        if(checkMail){
+            throw new Error('Mail has already been taken')
         }
 
         const newUser = await prisma.usuario.create({
@@ -38,7 +51,7 @@ class userService {
                 edad
             }
         })
-
+        
         return newUser
     }
 
@@ -58,14 +71,14 @@ class userService {
             }
         })
 
+        if(!userName){
+            throw new Error('You are not logged in')
+        }
+
         const matches = bcrypt.compareSync(password, userName.password)
 
         if(!matches){
             throw new Error('Wrong Password')
-        }
-
-        if(!userName){
-            throw new Error('You are not logged in')
         }
 
         const user = await prisma.usuario.update({
@@ -76,6 +89,7 @@ class userService {
                 password: hashedNewPassword
             }
         })
+
         return user
     }
 
@@ -87,6 +101,11 @@ class userService {
                 nombreUsuario
             }
         })
+
+        if(!user){
+            throw new Error('User not found')
+        }
+
         return user
     }
 
@@ -120,25 +139,11 @@ class userService {
         return json({ message : "Email sent succesfully!" });
 
     }
-
-    async getEmail(userInfo){
-        const { nombreUsuario } = userInfo
-
-        const user = await prisma.usuario.findFirst({
-            where: {
-                nombreUsuario
-            },
-            select: {
-                mail: true
-            }
-        })
-
-        if(!user){
-            throw new Error("That user doesn't exist");
-        }
-
-        return user;
-    }
 }
 
 module.exports = new userService()
+
+
+
+
+

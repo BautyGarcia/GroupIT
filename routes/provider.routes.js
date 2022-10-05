@@ -26,124 +26,139 @@ const authorization = (req, res, next) => {
 //----------Routes------------
 
 router.get("/all", async (req, res) => {
-    const providers = await Provider_Controller.getAllProviders();
-    res.json(providers);
+    try {
+        const providers = await Provider_Controller.getAllProviders();
+        return res.json(providers);
+    }
+    catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get all providers'});
+    }
 });
 
 router.get("/providersOfEvent", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const services = await Provider_Controller.getProvidersOfAnEvent(providerInfo);
-        res.json(services);
+        return res.json(services);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get providers of an event'});
     }
 });
 
 router.get("/eventsOfProvider", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const events = await Provider_Controller.getEventsOfAProvider(providerInfo);
-        res.json(events);
+        return res.json(events);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get events of a provider'});
     }
 });
 
 router.get("/myServices", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const services = await Provider_Controller.getMyServices(providerInfo);
-        res.json(services);
+        return res.json(services);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get my services'});
     }
 });
 
 router.get("", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const provider = await Provider_Controller.getProviderInfo(providerInfo);
-        res.json(provider);
+        return res.json(provider);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get provider info'});
     }
 });
 
 router.post("/create", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const provider = await Provider_Controller.createProvider(providerInfo);
-        res.json(provider);
+        return res.json(provider);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not create provider'});
     }
 });
 
 router.post("/add", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const provider = await Provider_Controller.addProviderToEvent(providerInfo);
-        res.json(provider);
+        return res.json(provider);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not add provider to event'});
     }
 });
 
 router.put("/update", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const provider = await Provider_Controller.updateProvider(providerInfo);
-        res.json(provider);
+        return res.json(provider);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not update provider'});
     }
 });
 
 router.delete("", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const provider = await Provider_Controller.deleteProvider(providerInfo);
-        res.json(provider);
+        return res.json(provider);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not delete provider'});
     }
 });
 
 router.delete("/event", authorization, async (req, res) => {
+    const providerInfo = req.body
+    providerInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const providerInfo = req.body
-        providerInfo.nombreUsuario = req.nombreUsuario
         const provider = await Provider_Controller.deleteProviderFromEvent(providerInfo);
-        res.json(provider);
+        return res.json(provider);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not delete provider from event'});
     }
 });
 

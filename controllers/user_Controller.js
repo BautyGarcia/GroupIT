@@ -21,8 +21,8 @@ class userController {
         return user_Service.sendEmail(userInfo)
     }
 
-    getEmail(userInfo){
-        return user_Service.getEmail(userInfo)
+    getUser(userInfo){
+        return user_Service.getUser(userInfo)
     }
 }
 

@@ -4,355 +4,331 @@ const prisma = new PrismaClient()
 class providerService {
 
     async getAllProviders() {
-        try {
-            const allProviders = await prisma.proveedores.findMany()
-            return allProviders;
-        }
-        catch (err) {
-            console.error(err.message);
-            throw err
-        }
+        return await prisma.proveedores.findMany()
     }
 
     async createProvider(providerInfo) {
-        try {
-            const { nombreUsuario, nombre, tipoServicio, personasMinimas, precio, contacto } = providerInfo
-            const newProvider = await prisma.proveedores.create({
-                data: {
-                    nombre,
-                    tipoServicio,
-                    personasMinimas,
-                    precio,
-                    contacto,
-                    usuario: {
-                        connect: {
-                            nombreUsuario
-                        }
-                    }
-                },
-                include: {
-                    usuario: {
-                        select: {
-                            nombreUsuario: true
-                        }
+        
+        const { nombreUsuario, nombre, tipoServicio, personasMinimas, precio, contacto } = providerInfo
+
+        const newProvider = await prisma.proveedores.create({
+            data: {
+                nombre,
+                tipoServicio,
+                personasMinimas,
+                precio,
+                contacto,
+                usuario: {
+                    connect: {
+                        nombreUsuario
                     }
                 }
-            })
-            return newProvider
+            },
+            include: {
+                usuario: {
+                    select: {
+                        nombreUsuario: true
+                    }
+                }
+            }
+        })
+
+        if (!newProvider) {
+            throw new Error('Error creating provider')
         }
-        catch (err) {
-            console.error(err.message);
-        }
+
+        return newProvider
+
     }
 
     async updateProvider(providerInfo) {
-        try {
-            const { nombreUsuario, nombre, tipoServicio, personasMinimas, precio, contacto } = providerInfo
+        
+        const { nombreUsuario, nombre, tipoServicio, personasMinimas, precio, contacto } = providerInfo
 
-            const providerToUpdate = await prisma.proveedores.findFirst({
-                where: {
-                    nombre,
-                    usuario: {
-                        nombreUsuario
-                    }
+        const providerToUpdate = await prisma.proveedores.findFirst({
+            where: {
+                nombre,
+                usuario: {
+                    nombreUsuario
                 }
-            })
-
-            if (!providerToUpdate) {
-                throw new Error("Provider not found")
             }
+        })
 
-            const updatedProvider = await prisma.proveedores.update({
-                where: {
-                    id: providerToUpdate.id
-                },
-                data: {
-                    tipoServicio,
-                    personasMinimas,
-                    precio,
-                    contacto
-                },
-                include: {
-                    usuario: {
-                        select: {
-                            nombreUsuario: true
-                        }
+        if (!providerToUpdate) {
+            throw new Error("Provider not found")
+        }
+
+        const updatedProvider = await prisma.proveedores.update({
+            where: {
+                id: providerToUpdate.id
+            },
+            data: {
+                tipoServicio,
+                personasMinimas,
+                precio,
+                contacto
+            },
+            include: {
+                usuario: {
+                    select: {
+                        nombreUsuario: true
                     }
                 }
-            })
-            return updatedProvider
+            }
+        })
+
+        if (!updatedProvider) {
+            throw new Error('Error updating provider')
         }
-        catch (err) {
-            console.error(err.message);
-        }
+        
+        return updatedProvider
+ 
     }
 
     async deleteProvider(providerInfo) {
-        try {
-            const { nombreUsuario, nombre } = providerInfo
+        
+        const { nombreUsuario, nombre } = providerInfo
 
-            const providerToDelete = await prisma.proveedores.findFirst({
-                where: {
-                    nombre,
-                    usuario: {
-                        nombreUsuario
-                    }
+        const providerToDelete = await prisma.proveedores.findFirst({
+            where: {
+                nombre,
+                usuario: {
+                    nombreUsuario
                 }
-            })
-
-            if (!providerToDelete) {
-                throw new Error("Provider not found")
             }
+        })
 
-            const deletedProvider = await prisma.proveedores.delete({
-                where: {
-                    id: providerToDelete.id
-                }
-            })
-            return deletedProvider
+        if (!providerToDelete) {
+            throw new Error("Provider not found")
         }
-        catch (err) {
-            console.error(err.message);
-        }
+
+        const deletedProvider = await prisma.proveedores.delete({
+            where: {
+                id: providerToDelete.id
+            }
+        })
+        return deletedProvider
+
     }
 
     async addProviderToEvent(providerInfo) {
-        try {
-            const { nombreUsuario, nombreProveedor, nombreEvento } = providerInfo
 
-            const provider = await prisma.proveedores.findFirst({
-                where: {
-                    nombre: nombreProveedor
-                }
-            })
+        const { nombreUsuario, nombreProveedor, nombreEvento } = providerInfo
 
-            if (!provider) {
-                throw new Error('Provider not found')
+        const provider = await prisma.proveedores.findFirst({
+            where: {
+                nombre: nombreProveedor
             }
+        })
 
-            const event = await prisma.eventos.findFirst({
-                where: {
-                    nombre: nombreEvento,
-                    usuario: {
-                        nombreUsuario
-                    }
+        if (!provider) {
+            throw new Error('Provider not found')
+        }
+
+        const event = await prisma.eventos.findFirst({
+            where: {
+                nombre: nombreEvento,
+                usuario: {
+                    nombreUsuario
                 }
-            })
-
-            if (!event) {
-                throw new Error('Event not found')
             }
+        })
 
-            const checkIfProviderIsInEvent = await prisma.EventosProveedor.findFirst({
-                where: {
-                    idEvento: event.id,
-                    idProveedor: provider.id
-                }
-            })
+        if (!event) {
+            throw new Error('Event not found')
+        }
 
-            if (checkIfProviderIsInEvent) {
-                throw new Error('Provider is already in event')
+        const checkIfProviderIsInEvent = await prisma.EventosProveedor.findFirst({
+            where: {
+                idEvento: event.id,
+                idProveedor: provider.id
             }
-            
-            const newProvider = await prisma.EventosProveedor.create({
-                data: {
-                    evento: {
-                        connect: {
-                            nombre: nombreEvento
-                        }
-                    },
-                    proveedor: {
-                        connect: {
-                            nombre: nombreProveedor
-                        }
+        })
+
+        if (checkIfProviderIsInEvent) {
+            throw new Error('Provider is already in event')
+        }
+        
+        const newProvider = await prisma.EventosProveedor.create({
+            data: {
+                evento: {
+                    connect: {
+                        nombre: nombreEvento
                     }
                 },
-                include: {
-                    proveedor: {
-                        select: {
-                            nombre: true,
-                            personasMinimas: true,
-                            precio: true,
-                            contacto: true
-                        }
-                    },
-                    evento: {
-                        select: {
-                            nombre: true,
-                            fecha: true,
-                            lugar: true
-                        }
-                    }
-                }
-            })
-            return newProvider
-        }
-        catch (err) {
-            console.error(err.message);
-        }
-    }
-
-    async deleteProviderFromEvent(providerInfo) {
-        try {
-            const { nombreUsuario, nombreProveedor, nombreEvento } = providerInfo
-
-            const providerToDelete = await prisma.EventosProveedor.findFirst({
-                where: {
-                    evento: {
-                        nombre: nombreEvento,
-                        usuario: {
-                            nombreUsuario
-                        }
-                    },
-                    proveedor: {
+                proveedor: {
+                    connect: {
                         nombre: nombreProveedor
                     }
                 }
-            })
-
-            if (!providerToDelete) {
-
-                throw new Error('Provider not found in event')
-            }
-
-            const deletedProvider = await prisma.EventosProveedor.delete({
-                where: {
-                    id: providerToDelete.id
+            },
+            include: {
+                proveedor: {
+                    select: {
+                        nombre: true,
+                        personasMinimas: true,
+                        precio: true,
+                        contacto: true
+                    }
                 },
-                include: {
-                    proveedor: {
-                        select: {
-                            nombre: true,
-                            personasMinimas: true,
-                            precio: true,
-                            contacto: true
-                        }
-                    },
-                    evento: {
-                        select: {
-                            nombre: true,
-                            fecha: true,
-                            lugar: true
-                        }
+                evento: {
+                    select: {
+                        nombre: true,
+                        fecha: true,
+                        lugar: true
                     }
                 }
-            })
-            return deletedProvider
-        }
-        catch (err) {
-            console.error(err.message);
-        }
+            }
+        })
+        return newProvider
+
     }
 
-    //Devuelve todos los proveedores registrados en un evento
-    async getProvidersOfAnEvent(providerInfo) {
-        try {
-            const { nombreUsuario, nombreEvento } = providerInfo
+    async deleteProviderFromEvent(providerInfo) {
 
-            const myEvent = await prisma.eventos.findFirst({
-                where: {
+        const { nombreUsuario, nombreProveedor, nombreEvento } = providerInfo
+
+        const providerToDelete = await prisma.EventosProveedor.findFirst({
+            where: {
+                evento: {
                     nombre: nombreEvento,
                     usuario: {
                         nombreUsuario
                     }
-                }
-            })
-
-            if (!myEvent) {
-                throw new Error('Event not found')
-            }
-
-            const myServices = await prisma.EventosProveedor.findMany({
-                where: {
-                    idEvento: myEvent.id
                 },
-                include: {
-                    proveedor: true
+                proveedor: {
+                    nombre: nombreProveedor
                 }
-            })
+            }
+        })
 
-            return myServices
+        if (!providerToDelete) {
 
+            throw new Error('Provider not found in event')
         }
-        catch (err) {
-            console.error(err.message);
+
+        const deletedProvider = await prisma.EventosProveedor.delete({
+            where: {
+                id: providerToDelete.id
+            },
+            include: {
+                proveedor: {
+                    select: {
+                        nombre: true,
+                        personasMinimas: true,
+                        precio: true,
+                        contacto: true
+                    }
+                },
+                evento: {
+                    select: {
+                        nombre: true,
+                        fecha: true,
+                        lugar: true
+                    }
+                }
+            }
+        })
+        return deletedProvider
+
+    }
+
+    async getProvidersOfAnEvent(providerInfo) {
+
+        const { nombreUsuario, nombreEvento } = providerInfo
+
+        const myEvent = await prisma.eventos.findFirst({
+            where: {
+                nombre: nombreEvento,
+                usuario: {
+                    nombreUsuario
+                }
+            }
+        })
+
+        if (!myEvent) {
+            throw new Error('Event not found')
         }
+
+        const myServices = await prisma.EventosProveedor.findMany({
+            where: {
+                idEvento: myEvent.id
+            },
+            include: {
+                proveedor: true
+            }
+        })
+
+        return myServices
+
     }
 
     // Devuelve todos los eventos en los que un proveedor esta registrado
     async getEventsOfAProvider(providerInfo) {
-        try {
-            const { nombreUsuario, nombreProveedor } = providerInfo
 
-            const provider = await prisma.proveedores.findFirst({
-                where: {
-                    nombre: nombreProveedor
-                }
-            })
+        const { nombreUsuario, nombreProveedor } = providerInfo
 
-            if (!provider) {
-                throw new Error('Provider not found')
+        const provider = await prisma.proveedores.findFirst({
+            where: {
+                nombre: nombreProveedor
             }
+        })
 
-            const myEvents = await prisma.EventosProveedor.findMany({
-                where: {
-                    idProveedor: provider.id
-                },
-                include: {
-                    evento: true
-                }
-            })
+        if (!provider) {
+            throw new Error('Provider not found')
+        }
 
-            return myEvents
-        }
-        catch (err) {
-            console.error(err.message);
-        }
+        const myEvents = await prisma.EventosProveedor.findMany({
+            where: {
+                idProveedor: provider.id
+            },
+            include: {
+                evento: true
+            }
+        })
+
+        return myEvents
+
     }
 
     async getMyServices(providerInfo) {
-        try {
-            const { nombreUsuario } = providerInfo
 
-            const myServices = await prisma.proveedores.findMany({
-                where: {
-                    usuario: {
-                        nombreUsuario
-                    }
-                },
-                select: {
-                    nombre: true,
-                    personasMinimas: true,
-                    precio: true,
-                    contacto: true
+        const { nombreUsuario } = providerInfo
+
+        const myServices = await prisma.proveedores.findMany({
+            where: {
+                usuario: {
+                    nombreUsuario
                 }
-            })
-            return myServices
-        }
-        catch (err) {
-            console.error(err.message);
-        }
+            },
+            select: {
+                nombre: true,
+                personasMinimas: true,
+                precio: true,
+                contacto: true
+            }
+        })
+
+        return myServices
+
     }
 
     async getProviderInfo(providerInfo) {
-        try {
-            const { nombreProveedor } = providerInfo
 
-            const provider = await prisma.proveedores.findFirst({
-                where: {
-                    nombre: nombreProveedor
-                }
-            })
+        const { nombreProveedor } = providerInfo
 
-            if (!provider) {
-                throw new Error('Provider not found')
+        const provider = await prisma.proveedores.findFirst({
+            where: {
+                nombre: nombreProveedor
             }
+        })
 
-            return provider
+        if (!provider) {
+            throw new Error('Provider not found')
         }
-        catch (err) {
-            console.error(err.message);
-        }
+
+        return provider
+
     }
 }
 

@@ -29,8 +29,8 @@ class providerController {
         return providers_Service.deleteProviderFromEvent(providerInfo);
     }
 
-    async getProvidersByEvent(providerInfo) {
-        return providers_Service.getProvidersByEvent(providerInfo);
+    async getProvidersOfAnEvent(providerInfo) {
+        return providers_Service.getProvidersOfAnEvent(providerInfo);
     }
 
     async getEventsOfAProvider(providerInfo) {

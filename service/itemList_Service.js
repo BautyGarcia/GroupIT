@@ -18,6 +18,10 @@ class itemListService {
             }
         })
 
+        if (!itemsToBring) {
+            throw new Error("Items to bring not found")
+        }
+
         return itemsToBring
     }
 
@@ -41,6 +45,10 @@ class itemListService {
                 }
             }
         })
+
+        if (!itemsBrought) {
+            throw new Error("Items brought not found")
+        }
     
         return itemsBrought
     }
@@ -71,6 +79,7 @@ class itemListService {
         })
 
         if (checkList) {
+
             //Si existe un registro de ese objeto, sumo la cantidad
             const newCheckList = await prisma.cosasTraer.update({
                 where: {
@@ -84,6 +93,7 @@ class itemListService {
             })
 
             if (newCheckList.cantidad <= 0){
+
                 //Si me ingresan un numero negativo, y la resta da 0 o menos, elimino el registro
                 const deleteCheckList = await prisma.cosasTraidas.delete({
                     where: {
@@ -96,22 +106,26 @@ class itemListService {
 
                 return deleteCheckList
             }
-        }
 
-        //Si no existe el registro de ese objeto, lo creo
-        const newList = await prisma.cosasTraer.create({
-            data: {
-                nombreObjeto,
-                cantidad: cantidadObjeto,
-                evento: {
-                    connect: {
-                        nombre: nombreEvento
+            return newCheckList
+        } 
+        else {
+
+            //Si no existe el registro de ese objeto, lo creo
+            const newList = await prisma.cosasTraer.create({
+                data: {
+                    nombreObjeto,
+                    cantidad: cantidadObjeto,
+                    evento: {
+                        connect: {
+                            nombre: nombreEvento
+                        }
                     }
                 }
-            }
-        })
+            })
 
-        return newList
+            return newList
+        }
     }
 
     async setItemsBrought(listInfo) {

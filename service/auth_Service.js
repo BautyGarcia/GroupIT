@@ -1,34 +1,23 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const bcrypt = require('bcrypt');
-
+const user_Service = require('../service/user_Service');
 
 class authService {
     async login(userInfo){
-        try {
-            const { nombreUsuario, password } = userInfo
+    
+        const { password } = userInfo
 
-            const user = await prisma.usuario.findFirst({
-                where: {
-                    nombreUsuario
-                }
-            })
+        const user = await user_Service.getUser(userInfo)
 
-            if(!user){
-                throw new Error("Wrong username")
-            }
-
-            const matches = bcrypt.compareSync(password, user.password)
-
-            if(!matches){
-                throw new Error("Wrong password")
-            }
-
-            return user
+        const matches = bcrypt.compareSync(password, user.password)
+        
+        if(!user || !matches){
+            throw new Error('Wrong credentials')
         }
-        catch (err) {
-            console.error(err.message);
-        }
+
+        return user
+
     }
 }
 

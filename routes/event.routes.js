@@ -7,14 +7,7 @@ const router = express.Router();
 const basePath = '/event'
 
 //-----------JWT-----------
-/*
-    try {
 
-    }
-    catch (err) {
-        console.error(err.message);
-    }
-*/
 const authorization = (req, res, next) => {
     const token = req.cookies.access_token;
     if (!token) {
@@ -35,121 +28,136 @@ const authorization = (req, res, next) => {
 router.get("/all", async (req, res) => {
     try {
         const events = await Event_Controller.getAllEvents();
-        res.json(events);
+        return res.json(events);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not get all events'});
     }
 });
 
 router.get("/own", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const eventInfo = req.body
-        eventInfo.nombreUsuario = req.nombreUsuario
         const event = await Event_Controller.getMyEvents(eventInfo);
-        res.json(event);
+        return res.json(event);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not get your events'});
     }
 });
 
 router.get("/participants", async (req, res) => {
-    try
-    {
-        const eventInfo = req.body
-        const participants = await Event_Controller.getParticipants(eventInfo);
-        res.json(participants);
+    const eventInfo = req.body
+
+    try {
+        const participants = await Event_Controller.getEventParticipants(eventInfo);
+        return res.json(participants);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not get participants'});
     }
 });
 
 router.post("", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreUsuario = req.nombreUsuario
+    
     try {
-        const eventInfo = req.body
-        eventInfo.nombreUsuario = req.nombreUsuario
         const event = await Event_Controller.createEvent(eventInfo);
-        res.json(event);
+        return res.json(event);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not create event'});
     }
 });
 
 router.post("/addUser", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreHost = req.nombreUsuario
+    
     try {
-        const eventInfo = req.body
-        eventInfo.nombreHost = req.nombreUsuario
         const newUser = await Event_Controller.addUserToEvent(eventInfo);
         res.json(newUser);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not add user to event'});
     }
 });
 
 router.put("", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreUsuario = req.nombreUsuario
+    
     try {
-        const eventInfo = req.body
-        eventInfo.nombreUsuario = req.nombreUsuario
         const newEvent = await Event_Controller.updateEvent(eventInfo);
         res.json(newEvent);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not update event'});
     }
 });
 
 router.put("/confirm", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreUsuario = req.nombreUsuario
+
     try {
-        const eventInfo = req.body
-        eventInfo.nombreUsuario = req.nombreUsuario
         const confirmedEvent = await Event_Controller.confirmEvent(eventInfo);
         res.json(confirmedEvent);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not confirm event'});
     }
 });
 
 router.delete("/user", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreHost = req.nombreUsuario
+
     try {
-        const eventInfo = req.body
-        eventInfo.nombreHost = req.nombreUsuario
         const deletedUser = await Event_Controller.deleteUserFromEvent(eventInfo);
         res.json(deletedUser);
     }
     catch (err) {
         console.error(err.message);
+        return res.status(400).json({ message: 'Could not delete user from event'});
     }
 });
 
 router.delete("", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreHost = req.nombreUsuario
+
     try {
-        const eventInfo = req.body
-        eventInfo.nombreHost = req.nombreUsuario
         const deletedEvent = await Event_Controller.deleteEvent(eventInfo);
         res.json(deletedEvent);
     }
     catch (err) {
         console.error(err.message)
-        res.status(403).send("You must login");
+        return res.status(400).json({ message: 'Could not delete event'});
     }
 });
 
 router.delete("/quit", authorization, async (req, res) => {
+    const eventInfo = req.body
+    eventInfo.nombreUsuario = req.nombreUsuario
+    
     try {
-        const eventInfo = req.body
-        eventInfo.nombreUsuario = req.nombreUsuario
         const quitEvent = await Event_Controller.quitEvent(eventInfo);
         res.json(quitEvent);
     }
     catch (err) {
-        console.error(err.message)
-        res.status(403).send("You must login");
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not quit event'});
     }
 });
 

@@ -26,29 +26,57 @@ const authorization = (req, res, next) => {
 //----------Routes------------
 
 router.get("/toBring", async (req, res) => {
-    const listInfo = req.body
+  const listInfo = req.body
+
+  try {
     const items = await itemList_Controller.getItemsToBring(listInfo);
-    res.json(items);
+    return res.json(items).status(200);
+  }
+  catch (err) {
+    console.error(err.message);
+    return res.status(400).json({ message: 'Could not get items'});
+  }
 });
 
 router.get("/brought", async (req, res) => {
     const listInfo = req.body
-    const items = await itemList_Controller.getItemsBrought(listInfo);
-    res.json(items);
+
+    try {
+      const items = await itemList_Controller.getItemsBrought(listInfo);
+      return res.json(items);
+    }
+    catch (err) {
+      console.error(err.message);
+      return res.status(400).json({ message: 'Could not get items'});
+    }
 });
 
 router.post("/toBring", authorization, async (req, res) => {
     const listInfo = req.body
     listInfo.nombreHost = req.nombreUsuario
-    const items = await itemList_Controller.setItemsToBring(listInfo);
-    res.json(items);
+
+    try {
+      const items = await itemList_Controller.setItemsToBring(listInfo);
+      return res.json(items).status(200);
+    }
+    catch (err) {
+      console.error(err.message);
+      return res.status(400).json({ message: 'Could not get items'});
+    }
 });
 
 router.post("/brought", authorization, async (req, res) => {
     const listInfo = req.body
     listInfo.nombreUsuario = req.nombreUsuario
-    const items = await itemList_Controller.setItemsBrought(listInfo);
-    res.json(items);
+
+    try {
+      const items = await itemList_Controller.setItemsBrought(listInfo);
+      return res.json(items);
+    }
+    catch (err) {
+      console.error(err.message);
+      return res.status(400).json({ message: 'Could not get items'});
+    }
 });
 
 
