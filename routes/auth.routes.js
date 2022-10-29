@@ -2,7 +2,6 @@ require("dotenv").config()
 const express = require('express');
 const jwt = require('jsonwebtoken')
 const Auth_Controller = require('../controllers/auth_Controller');
-const User_Controller = require('../controllers/user_Controller');
 
 const router = express.Router();
 const basePath = '/auth'
@@ -42,7 +41,9 @@ router.post("/login", async (req, res) => {
     const options = {
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 30),
-      withCredentials: true
+      withCredentials: true,
+      secure: true,
+      sameSite: "none"
     };
 
     res.cookie("access_token", token, options)

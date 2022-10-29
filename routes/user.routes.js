@@ -37,6 +37,7 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/sendEmail", authorization, async (req, res) => {
+    console.log("gola")
     const userInfo = req.body
     userInfo.nombreUsuario = req.nombreUsuario
     userInfo.email = req.mail;
