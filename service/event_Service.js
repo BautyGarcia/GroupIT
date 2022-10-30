@@ -129,7 +129,7 @@ class eventService {
 
         const event = await prisma.eventos.findFirst({
             where: {
-                nombre: nombreEvento,
+                id: nombreEvento,
                 usuario: {
                     nombreUsuario: nombreHost
                 }
