@@ -226,6 +226,15 @@ class eventService {
                 evento: {
                     nombre: nombreEvento
                 }
+            },
+            select: {
+                confirmacion: true,
+                usuario: {
+                    select: {
+                        nombreUsuario: true,
+                        mail: true
+                    }
+                },
             }
         })
 
