@@ -125,17 +125,17 @@ class eventService {
 
     async addUserToEvent(eventInfo) {
 
-        const {nombreHost, nombreUsuario, nombreEvento } = eventInfo
+        const {nombreHost, nombreUsuario, idEvento, nombreEvento } = eventInfo
 
         const event = await prisma.eventos.findFirst({
             where: {
-                id: nombreEvento,
+                id: idEvento,
                 usuario: {
                     nombreUsuario: nombreHost
                 }
             }
         })
-
+        console.log(event)
         if (!event) {
             throw new Error('User is not host of event')
         }
@@ -152,6 +152,13 @@ class eventService {
                         nombre: nombreEvento
                     }
                 }
+            },
+            include: {
+                usuario: {
+                    select: {
+                        nombreUsuario: true
+                    }
+                },
             }
 
         })
@@ -357,6 +364,29 @@ class eventService {
         }
 
         return newEvent
+    }
+
+    async getEvent (eventInfo) {
+        const { idEvento } = eventInfo;
+
+        const event = await prisma.eventos.findFirst({
+            where: {
+                id: idEvento
+            },
+            include: {
+                usuario: {
+                    select: {
+                        nombreUsuario: true
+                    }
+                }
+            }
+        })
+
+        if (!event) {
+            throw new Error('Error getting event')
+        }
+
+        return event
     }
 }
 

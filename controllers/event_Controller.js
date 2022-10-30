@@ -41,6 +41,9 @@ class eventController {
         return events_Service.quitEvent(eventInfo)
     }
     
+    getEvent(eventInfo){
+        return events_Service.getEvent(eventInfo)
+    }
 }
 
 module.exports = new eventController()

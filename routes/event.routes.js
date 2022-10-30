@@ -50,6 +50,19 @@ router.get("/own", authorization, async (req, res) => {
     }
 });
 
+router.post("/getEvent", async (req, res) => {
+    const eventInfo = req.body
+
+    try {
+        const event = await Event_Controller.getEvent(eventInfo);
+        return res.json(event);
+    }
+    catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get event'});
+    }
+});
+
 router.post("/participants", async (req, res) => {
     const eventInfo = req.body
 
@@ -80,8 +93,10 @@ router.post("", authorization, async (req, res) => {
 router.post("/addUser", authorization, async (req, res) => {
     const eventInfo = req.body
     eventInfo.nombreHost = req.nombreUsuario
-    
+    const eventNameInfo = eventInfo.idEvento;
     try {
+        const eventName = await Event_Controller.getEvent(eventNameInfo);
+        eventInfo.nombreEvento = eventName.nombre
         const newUser = await Event_Controller.addUserToEvent(eventInfo);
         res.json(newUser);
     }
