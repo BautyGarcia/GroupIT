@@ -50,7 +50,7 @@ router.get("/own", authorization, async (req, res) => {
     }
 });
 
-router.get("/participants", async (req, res) => {
+router.post("/participants", async (req, res) => {
     const eventInfo = req.body
 
     try {
