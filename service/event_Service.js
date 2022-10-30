@@ -224,7 +224,7 @@ class eventService {
         const participants = await prisma.usuarioEventos.findMany({
             where: {
                 evento: {
-                    nombre: nombreEvento
+                    id: nombreEvento
                 }
             },
             select: {
