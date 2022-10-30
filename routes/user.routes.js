@@ -25,6 +25,20 @@ const authorization = (req, res, next) => {
 
 //----------Routes------------
 
+router.get("/getUser", authorization, async (req, res) => {
+    const userInfo = req.body
+    userInfo.nombreUsuario = req.nombreUsuario
+    
+    try {
+        const user = await User_Controller.getUser(userInfo);
+        return res.json(user);
+    }
+    catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ message: 'Could not get user'});
+    }
+});
+
 router.get("/all", async (req, res) => {
     try {
         const users = await User_Controller.getAllUsers();
