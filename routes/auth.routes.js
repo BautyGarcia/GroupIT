@@ -42,8 +42,8 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 30),
       withCredentials: true,
-      //secure: true,
-      //sameSite: "none"
+      secure: true,
+      sameSite: "none"
     };
 
     res.cookie("access_token", token, options)
