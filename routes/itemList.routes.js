@@ -25,7 +25,7 @@ const authorization = (req, res, next) => {
 
 //----------Routes------------
 
-router.get("/toBring", async (req, res) => {
+router.post("/toBring", async (req, res) => {
   const listInfo = req.body
 
   try {
@@ -38,7 +38,7 @@ router.get("/toBring", async (req, res) => {
   }
 });
 
-router.get("/brought", async (req, res) => {
+router.post("/brought", async (req, res) => {
     const listInfo = req.body
 
     try {
