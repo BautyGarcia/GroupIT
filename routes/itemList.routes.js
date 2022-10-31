@@ -29,7 +29,7 @@ const authorization = (req, res, next) => {
 router.post("/toBring", async (req, res) => {
   const listInfo = req.body
   const EventId = listInfo.idEvento;
-
+  
   try {
     const eventName = await Event_Controller.getEvent(EventId);
     listInfo.nombreEvento = eventName.nombre;
@@ -58,11 +58,14 @@ router.post("/brought", async (req, res) => {
     }
 });
 
-router.post("/toBring", authorization, async (req, res) => {
+router.post("/setToBring", authorization, async (req, res) => {
     const listInfo = req.body
     listInfo.nombreHost = req.nombreUsuario
+    const EventId = listInfo.idEvento;
 
     try {
+      const eventName = await Event_Controller.getEvent(EventId);
+      listInfo.nombreEvento = eventName.nombre;
       const items = await itemList_Controller.setItemsToBring(listInfo);
       return res.json(items).status(200);
     }
@@ -72,11 +75,14 @@ router.post("/toBring", authorization, async (req, res) => {
     }
 });
 
-router.post("/brought", authorization, async (req, res) => {
+router.post("/setBrought", authorization, async (req, res) => {
     const listInfo = req.body
     listInfo.nombreUsuario = req.nombreUsuario
+    const EventId = listInfo.idEvento;
 
     try {
+      const eventName = await Event_Controller.getEvent(EventId);
+      listInfo.nombreEvento = eventName.nombre;
       const items = await itemList_Controller.setItemsBrought(listInfo);
       return res.json(items);
     }
