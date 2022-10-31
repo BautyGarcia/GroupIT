@@ -14,7 +14,8 @@ class itemListService {
             },
             select: {
                 nombreObjeto: true,
-                cantidad: true
+                cantidad: true,
+                cantidadTotal: true
             }
         })
 
