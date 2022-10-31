@@ -87,7 +87,10 @@ class itemListService {
                 },
                 data: {
                     cantidad: {
-                        increment: cantidadObjeto
+                        increment: cantidadObjeto,
+                    },
+                    cantidadTotal: {
+                        increment: cantidadObjeto,
                     }
                 }
             })
@@ -116,6 +119,7 @@ class itemListService {
                 data: {
                     nombreObjeto,
                     cantidad: cantidadObjeto,
+                    cantidadTotal: cantidadObjeto,
                     evento: {
                         connect: {
                             nombre: nombreEvento

@@ -65,11 +65,12 @@ model EventosProveedor {
 }
 
 model CosasTraer {
-  id           String  @id @default(cuid())
-  nombreObjeto String?
-  cantidad     Int?
-  idEvento     String
-  evento       Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)
+  id            String  @id @default(cuid())
+  nombreObjeto  String?
+  cantidad      Int?
+  idEvento      String
+  cantidadTotal Int?
+  evento        Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)
 }
 
 model CosasTraidas {
