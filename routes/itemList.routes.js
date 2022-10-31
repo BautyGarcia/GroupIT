@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require('express');
 const jwt = require('jsonwebtoken')
 const itemList_Controller = require('../controllers/itemList_Controller');
+const Event_Controller = require('../controllers/event_Controller');
 
 const router = express.Router();
 const basePath = '/itemList'
@@ -27,8 +28,11 @@ const authorization = (req, res, next) => {
 
 router.post("/toBring", async (req, res) => {
   const listInfo = req.body
+  const EventId = listInfo.idEvento;
 
   try {
+    const eventName = await Event_Controller.getEvent(EventId);
+    listInfo.nombreEvento = eventName.nombre;
     const items = await itemList_Controller.getItemsToBring(listInfo);
     return res.json(items).status(200);
   }
@@ -40,8 +44,11 @@ router.post("/toBring", async (req, res) => {
 
 router.post("/brought", async (req, res) => {
     const listInfo = req.body
+    const EventId = listInfo.idEvento;
 
     try {
+      const eventName = await Event_Controller.getEvent(EventId);
+      listInfo.nombreEvento = eventName.nombre;
       const items = await itemList_Controller.getItemsBrought(listInfo);
       return res.json(items);
     }
