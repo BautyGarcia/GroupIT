@@ -4,14 +4,13 @@ const prisma = new PrismaClient()
 class eventService {
 
     async createEvent(eventInfo) {
-        const { nombre, descripcion, lugar, fecha, nombreUsuario } = eventInfo
+        const { nombre, descripcion, lugar, nombreUsuario } = eventInfo
 
         const newEvent = await prisma.eventos.create({
             data: {
                 nombre,
                 descripcion,
                 lugar,
-                fecha: new Date(fecha),
                 usuario: {
                     connect: {
                         nombreUsuario

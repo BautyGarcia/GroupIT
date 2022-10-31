@@ -25,7 +25,7 @@ model Eventos {
   id               String             @id @default(cuid())
   nombre           String             @unique
   descripcion      String
-  fecha            DateTime           @default(now())
+  fecha            DateTime?          @default(now())
   lugar            String
   usuarioId        String
   usuario          Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
