@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Usuario {
@@ -33,6 +34,8 @@ model Eventos {
   CosasTraidas     CosasTraidas[]
   eventosProveedor EventosProveedor[]
   usuarioEventos   UsuarioEventos[]
+
+  @@index([usuarioId])
 }
 
 model Proveedores {
@@ -45,6 +48,8 @@ model Proveedores {
   eventosProveedor EventosProveedor[]
   usuario          Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId        String
+
+  @@index([usuarioId])
 }
 
 model UsuarioEventos {
@@ -54,6 +59,9 @@ model UsuarioEventos {
   idEvento     String
   evento       Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)
   usuario      Usuario @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+
+  @@index([idEvento])
+  @@index([idUsuario])
 }
 
 model EventosProveedor {
@@ -62,6 +70,9 @@ model EventosProveedor {
   idProveedor String
   evento      Eventos     @relation(fields: [idEvento], references: [id], onDelete: Cascade)
   proveedor   Proveedores @relation(fields: [idProveedor], references: [id], onDelete: Cascade)
+
+  @@index([idEvento])
+  @@index([idProveedor])
 }
 
 model CosasTraer {
@@ -71,6 +82,8 @@ model CosasTraer {
   idEvento      String
   cantidadTotal Int?
   evento        Eventos @relation(fields: [idEvento], references: [id], onDelete: Cascade)
+
+  @@index([idEvento])
 }
 
 model CosasTraidas {
@@ -81,6 +94,9 @@ model CosasTraidas {
   idUsuario    String?
   evento       Eventos  @relation(fields: [idEvento], references: [id], onDelete: Cascade)
   usuario      Usuario? @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+
+  @@index([idEvento])
+  @@index([idUsuario])
 }
 
 enum TipoServicio {
