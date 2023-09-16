@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@prisma/client": "^4.2.1",
     "@quixo3/prisma-session-store": "^3.1.8",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
@@ -23,11 +22,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build":"npx prisma migrate deploy && npx prisma generate",
-    "push":"git add . && git commit -m $1 && git push https://github.com/BautyGarcia/GroupIT.git"
+    "build": "npx prisma migrate deploy && npx prisma generate",
+    "push": "git add . && git commit -m $1 && git push https://github.com/BautyGarcia/GroupIT.git"
   },
   "devDependencies": {
     "nodemon": "^2.0.19",
-    "prisma": "^4.2.1"
+    "prisma": "^4.16.2"
   }
 }
