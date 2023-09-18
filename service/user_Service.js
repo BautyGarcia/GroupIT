@@ -10,7 +10,7 @@ class userService {
     async getUser({ nombreUsuario }){
         return await prisma.usuario.findFirst({
             where: {
-                nombreUsuario
+                mail: nombreUsuario
             }
         }) 
     }

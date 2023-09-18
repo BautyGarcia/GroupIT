@@ -28,7 +28,7 @@ const authorization = (req, res, next) => {
 router.post("/login", async (req, res) => {
     const authInfo = req.body
     let checkUser;
-
+    
     try {
       checkUser = await Auth_Controller.login(authInfo);
     }

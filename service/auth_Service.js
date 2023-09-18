@@ -7,9 +7,9 @@ class authService {
     async login(userInfo){
     
         const { password } = userInfo
-
+        
         const user = await user_Service.getUser(userInfo)
-
+        
         const matches = bcrypt.compareSync(password, user.password)
         
         if(!user || !matches){
