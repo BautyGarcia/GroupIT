@@ -79,7 +79,7 @@ router.post("/participants", async (req, res) => {
 router.post("", authorization, async (req, res) => {
     const eventInfo = req.body
     eventInfo.nombreUsuario = req.nombreUsuario
-    
+    console.log(eventInfo.nombreUsuario);
     try {
         const event = await Event_Controller.createEvent(eventInfo);
         return res.json(event);
